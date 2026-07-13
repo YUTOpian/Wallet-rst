@@ -15,13 +15,9 @@ export async function refreshAccount() {
 
   try {
 
-    const address =
-      appState.currentAddress.toString();
+    const address = appState.currentAddress.toString();
 
-
-    document.getElementById("account-address").textContent =
-      address;
-
+    document.getElementById("account-address").textContent = address;
 
 
     const res = await fetch(
@@ -29,28 +25,21 @@ export async function refreshAccount() {
     );
 
 
-    const data =
-      await res.json();
+    const data = await res.json();
+
+    const mosaics = data.account.mosaics || [];
 
 
-    const mosaics =
-      data.account.mosaics || [];
-
-
-
+    // モザイク情報保存
     appState.mosaicInfo = {};
 
 
-
-    const select =
-      document.getElementById("tx-mosaic");
-
+    // 送信用プルダウン
+    const select = document.getElementById("tx-mosaic");
 
     if (select) {
       select.innerHTML = "";
     }
-
-
 
 
 
@@ -60,24 +49,22 @@ export async function refreshAccount() {
       const idHex =
         typeof mosaic.id === "string"
           ? mosaic.id.toUpperCase()
-          : BigInt(mosaic.id)
-              .toString(16)
-              .toUpperCase();
+          : mosaic.id.toString(16).toUpperCase();
 
 
 
+      // 最小単位量
       const amount =
         Number(
           typeof mosaic.amount === "object"
             ? mosaic.amount.value
-            : mosaic.amount
+            : (mosaic.amount ?? mosaic.quantity ?? 0)
         );
 
 
 
-      let displayName = idHex;
       let divisibility = 0;
-
+      let displayName = idHex;
 
 
 
@@ -89,36 +76,29 @@ export async function refreshAccount() {
         idHex === "72C0212E67A08BCE"
       ) {
 
-
         displayName = "XYM";
         divisibility = 6;
-
 
 
       } else {
 
 
-        const mosaicIdDecimal =
-          BigInt(
-            "0x" + idHex
-          ).toString();
-
-
-
-
         /*
-          Mosaic情報
+          Mosaic情報取得
         */
         try {
 
+          const mosaicIdDecimal =
+            BigInt("0x" + idHex).toString();
 
-          const mosaicRes =
-            await fetch(
-              new URL(
-                `/mosaics/${mosaicIdDecimal}`,
-                appState.NODE
-              )
-            );
+
+
+          const mosaicRes = await fetch(
+            new URL(
+              `/mosaics/${mosaicIdDecimal}`,
+              appState.NODE
+            )
+          );
 
 
           const mosaicData =
@@ -130,21 +110,23 @@ export async function refreshAccount() {
 
 
 
+          /*
+            可分性取得
+          */
           divisibility =
             mosaicInfo?.properties?.find(
-              p => p.id === 1
+              (p) => p.id === 1
             )?.value ?? 0;
 
 
 
         } catch(e) {
 
-
           console.warn(
             "Mosaic情報取得失敗",
-            idHex
+            idHex,
+            e
           );
-
 
         }
 
@@ -158,87 +140,64 @@ export async function refreshAccount() {
         try {
 
 
-          const nsRes =
-            await fetch(
-              new URL(
-                `/namespaces/mosaic/${mosaicIdDecimal}`,
-                appState.NODE
-              )
-            );
+          const mosaicIdDecimal =
+            BigInt("0x" + idHex).toString();
 
 
 
-          if(nsRes.ok){
-
-
-            const nsData =
-              await nsRes.json();
-
-
-
-            console.log(
-              "Namespace DATA:",
-              nsData
-            );
+          const nsRes = await fetch(
+            new URL(
+              `/namespaces?mosaicId=${mosaicIdDecimal}`,
+              appState.NODE
+            )
+          );
 
 
 
-            /*
-              パターン1
-              {
-                name:"xxx"
-              }
-            */
-            if(
-              nsData.name
-            ){
+          const nsData =
+            await nsRes.json();
+
+
+
+          console.log(
+            "Namespace API:",
+            nsData
+          );
+
+
+
+          if (
+            nsData.data &&
+            nsData.data.length > 0
+          ) {
+
+
+            const namespace =
+              nsData.data[0].namespace;
+
+
+
+            if(namespace?.name){
 
               displayName =
-                nsData.name;
+                namespace.name;
 
             }
-
-
-
-            /*
-              パターン2
-              {
-                data:[
-                  {
-                    namespace:{
-                      name:"xxx"
-                    }
-                  }
-                ]
-              }
-            */
-            else if(
-              nsData.data &&
-              nsData.data.length > 0
-            ){
-
-
-              const namespace =
-                nsData.data[0]?.namespace;
-
-
-
-              if(namespace?.name){
-
-                displayName =
-                  namespace.name;
-
-              }
-
-            }
-
 
           }
 
 
 
-        } catch(e) {
+          console.log(
+            "MOSAIC:",
+            idHex,
+            "NAME:",
+            displayName
+          );
 
+
+
+        } catch(e) {
 
           console.warn(
             "Namespace取得失敗",
@@ -246,11 +205,11 @@ export async function refreshAccount() {
             e
           );
 
-
         }
 
 
       }
+
 
 
 
@@ -261,8 +220,7 @@ export async function refreshAccount() {
 
       appState.mosaicInfo[idHex] = {
 
-        name:
-          displayName,
+        name: displayName,
 
         divisibility,
 
@@ -275,7 +233,7 @@ export async function refreshAccount() {
 
 
       /*
-        プルダウン表示
+        送信用プルダウン追加
       */
 
       if(select){
@@ -285,22 +243,16 @@ export async function refreshAccount() {
           document.createElement("option");
 
 
-
-        option.value =
-          idHex;
+        option.value = idHex;
 
 
 
         option.textContent =
-          `${displayName} (${(
-            amount /
-            (10 ** divisibility)
-          ).toFixed(6)})`;
+          `${displayName} (${(amount / (10 ** divisibility)).toFixed(6)})`;
 
 
 
         select.appendChild(option);
-
 
       }
 
@@ -312,7 +264,7 @@ export async function refreshAccount() {
 
 
     /*
-      XYM残高
+      XYM残高表示
     */
 
     const xymId =
@@ -331,13 +283,9 @@ export async function refreshAccount() {
 
       xym
 
-        ? `${(
-            xym.amount /
-            (10 ** xym.divisibility)
-          ).toFixed(3)} XYM`
+        ? `${(xym.amount / (10 ** xym.divisibility)).toFixed(3)} XYM`
 
         : "0.000 XYM";
-
 
 
 
@@ -364,5 +312,7 @@ export async function refreshAccount() {
 
 
   }
+
+}
 
 }
