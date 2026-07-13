@@ -29,7 +29,7 @@ export async function refreshAccount() {
 
     console.log("ACCOUNT DATA:", data);
     console.log("MOSAICS:", data.account.mosaics);
-    
+
 
     const mosaics = data.account.mosaics || [];
 
@@ -58,8 +58,15 @@ export async function refreshAccount() {
           : mosaic.id.toString(16).toUpperCase();
 
 
+      /*
+        最小単位量取得
+      */
       const amount =
-        Number(mosaic.amount ?? mosaic.quantity ?? 0);
+        Number(
+          typeof mosaic.amount === "object"
+            ? mosaic.amount.value
+            : (mosaic.amount ?? mosaic.quantity ?? 0)
+        );
 
 
       /*
@@ -76,6 +83,7 @@ export async function refreshAccount() {
           new URL(`/mosaics/${idHex}`, appState.NODE)
         );
 
+
         const mosaicData = await mosaicRes.json();
 
 
@@ -90,7 +98,7 @@ export async function refreshAccount() {
 
 
         name =
-          mosaicData.id?.id === "6BED913FA20223F8"
+          idHex === "6BED913FA20223F8"
             ? "XYM"
             : idHex;
 
@@ -128,8 +136,9 @@ export async function refreshAccount() {
 
         option.value = idHex;
 
+
         option.textContent =
-          `${name} (${amount / (10 ** divisibility)})`;
+          `${name} (${(amount / (10 ** divisibility)).toLocaleString()})`;
 
 
         select.appendChild(option);
@@ -155,7 +164,7 @@ export async function refreshAccount() {
 
     document.getElementById("account-balance").textContent =
       xym
-        ? `${xym.amount / (10 ** xym.divisibility)} XYM`
+        ? `${(xym.amount / (10 ** xym.divisibility)).toLocaleString()} XYM`
         : "0 XYM";
 
 
