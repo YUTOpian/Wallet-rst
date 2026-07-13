@@ -54,6 +54,12 @@ export const appState = {
   networkType: null, // 104 or 152
 
   isSdkReady: false,
+  
+    // 保有モザイク一覧
+  mosaicList: [],
+  
+   // モザイク情報
+  mosaicInfo: {},
 };
 
 // 現在のネットワークに応じた XYM モザイク ID を返す
