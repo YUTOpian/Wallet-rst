@@ -40,15 +40,29 @@
         <div class="card">
             <h2>モザイク送金</h2>
             
-        <select id="tx-mosaic"></select>
-            <input id="tx-recipient" class="input-box" placeholder="宛先アドレス" />
-            <select id="tx-mosaic-select" class="input-box">
-                <option value="">モザイクを読み込み中…</option>
-            </select>
-            <input id="tx-amount" class="input-box" type="number" min="0" step="any" placeholder="数量" />
-            <textarea id="tx-message" class="input-box" placeholder="メッセージ（任意）"></textarea>
+<h2>モザイク送金</h2>
 
-            <button id="btn-transfer" class="button-primary">送金する</button>
+<input id="tx-recipient" class="input-box" placeholder="宛先アドレス" />
+
+<select id="tx-mosaic" class="input-box">
+    <option value="">モザイクを読み込み中…</option>
+</select>
+
+<input id="tx-amount"
+       class="input-box"
+       type="number"
+       min="0"
+       step="any"
+       placeholder="数量" />
+
+<textarea
+    id="tx-message"
+    class="input-box"
+    placeholder="メッセージ（任意）"></textarea>
+
+<button id="btn-transfer" class="button-primary">
+    送金する
+</button>
             <div id="tx-status" class="status-text"></div>
         </div>
 
