@@ -27,10 +27,6 @@ export async function refreshAccount() {
 
     const data = await res.json();
 
-    console.log("ACCOUNT DATA:", data);
-    console.log("MOSAICS:", data.account.mosaics);
-
-
     const mosaics = data.account.mosaics || [];
 
 
@@ -59,7 +55,7 @@ export async function refreshAccount() {
 
 
       /*
-        最小単位量取得
+        最小単位量
       */
       const amount =
         Number(
@@ -87,20 +83,35 @@ export async function refreshAccount() {
         const mosaicData = await mosaicRes.json();
 
 
-        const mosaicInfo =
-          mosaicData.mosaic;
+        const mosaicInfo = mosaicData.mosaic;
 
 
-        divisibility =
-          mosaicInfo.properties.find(
-            (p) => p.id === 1
-          )?.value ?? 0;
+        /*
+          XYMは固定で可分性6
+        */
+        if (
+          idHex === "6BED913FA20223F8" ||
+          idHex === "72C0212E67A08BCE"
+        ) {
+
+          name = "XYM";
+          divisibility = 6;
 
 
-        name =
-          idHex === "6BED913FA20223F8"
-            ? "XYM"
-            : idHex;
+        } else {
+
+
+          /*
+            その他モザイクはAPIから取得
+          */
+          name = idHex;
+
+          divisibility =
+            mosaicInfo?.properties?.find(
+              (p) => p.id === 1
+            )?.value ?? 0;
+
+        }
 
 
       } catch(e) {
@@ -110,7 +121,20 @@ export async function refreshAccount() {
           idHex
         );
 
+
+        /*
+          XYMの場合は失敗しても6固定
+        */
+        if (
+          idHex === "6BED913FA20223F8" ||
+          idHex === "72C0212E67A08BCE"
+        ) {
+          name = "XYM";
+          divisibility = 6;
+        }
+
       }
+
 
 
       /*
@@ -124,8 +148,9 @@ export async function refreshAccount() {
       };
 
 
+
       /*
-        select追加
+        送信用プルダウン追加
       */
 
       if(select){
@@ -148,8 +173,9 @@ export async function refreshAccount() {
     }
 
 
+
     /*
-      XYM表示
+      XYM残高表示
     */
 
     const xymId =
@@ -168,6 +194,7 @@ export async function refreshAccount() {
         : "0 XYM";
 
 
+
     setStatus(
       "account-status",
       "取得成功",
@@ -178,6 +205,7 @@ export async function refreshAccount() {
   } catch(e){
 
     console.error(e);
+
 
     setStatus(
       "account-status",
