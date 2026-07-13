@@ -1,6 +1,9 @@
 // index.js
 
 import { appState } from "./config.js";
+
+console.log("index.js loaded");
+
 import { autoConnectSSS } from "./sss.js";
 import { refreshAccount } from "./account.js";
 import { sendTx } from "./transfer.js";
