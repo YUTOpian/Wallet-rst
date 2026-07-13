@@ -89,8 +89,10 @@ export async function refreshAccount() {
         */
         try {
 
+
           const mosaicIdDecimal =
             BigInt("0x" + idHex).toString();
+
 
 
           const mosaicRes = await fetch(
@@ -103,62 +105,34 @@ export async function refreshAccount() {
 
           const mosaicData = await mosaicRes.json();
 
+
           const mosaicInfo = mosaicData.mosaic;
 
 
+
+          /*
+            可分性取得
+          */
           divisibility =
             mosaicInfo?.properties?.find(
               (p) => p.id === 1
             )?.value ?? 0;
 
 
-        } catch(e) {
 
-          console.warn(
-            "Mosaic情報取得失敗",
-            idHex
-          );
-
-        }
-
-
-
-        /*
-          Namespace取得
-        */
-        try {
-
-          const mosaicIdDecimal =
-            BigInt("0x" + idHex).toString();
-
-
-          const nsRes = await fetch(
-            new URL(
-              `/namespaces/mosaic/${mosaicIdDecimal}`,
-              appState.NODE
-            )
-          );
-
-
-          const nsData = await nsRes.json();
-
-
-          console.log(
-            "Namespace API:",
-            idHex,
-            nsData
-          );
-
-
+          /*
+            Namespace取得
+          */
           if (
-            nsData.names &&
-            nsData.names.length > 0
+            mosaicInfo?.names &&
+            mosaicInfo.names.length > 0
           ) {
 
             namespaceName =
-              nsData.names[0].name;
+              mosaicInfo.names[0].name;
 
           }
+
 
 
           console.log(
@@ -172,7 +146,7 @@ export async function refreshAccount() {
         } catch(e) {
 
           console.warn(
-            "Namespace取得失敗",
+            "Mosaic情報取得失敗",
             idHex,
             e
           );
