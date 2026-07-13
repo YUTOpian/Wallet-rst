@@ -132,12 +132,12 @@ export async function refreshAccount() {
 
 
           if (
-            nsData.names &&
-            nsData.names.length > 0
+            nsData.data &&
+            nsData.data.length > 0
           ) {
 
             namespaceName =
-              nsData.names[0].name;
+              nsData.data[0].name;
 
           }
 
