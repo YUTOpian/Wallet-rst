@@ -1,63 +1,316 @@
-/*
-  Namespace取得
-*/
-try {
+// account.js
+// アカウント残高・保有モザイク取得
+
+import { appState } from "./config.js";
+import { setStatus } from "./ui.js";
 
 
-  const mosaicIdDecimal =
-    BigInt("0x" + idHex).toString();
+export async function refreshAccount() {
+
+  if (!appState.NODE || !appState.currentAddress) return;
+
+
+  setStatus("account-status", "残高取得中…");
+
+
+  try {
+
+    const address = appState.currentAddress.toString();
+
+    document.getElementById("account-address").textContent = address;
+
+
+    const res = await fetch(
+      new URL(`/accounts/${address}`, appState.NODE)
+    );
+
+
+    const data = await res.json();
+
+    const mosaics = data.account.mosaics || [];
+
+
+    // モザイク情報保存
+    appState.mosaicInfo = {};
+
+
+    // 送信用プルダウン
+    const select = document.getElementById("tx-mosaic");
+
+    if (select) {
+      select.innerHTML = "";
+    }
 
 
 
-  const nsRes = await fetch(
-    new URL(
-      `/namespaces?mosaicId=${mosaicIdDecimal}`,
-      appState.NODE
-    )
-  );
+    for (const mosaic of mosaics) {
+
+
+      const idHex =
+        typeof mosaic.id === "string"
+          ? mosaic.id.toUpperCase()
+          : mosaic.id.toString(16).toUpperCase();
 
 
 
-  const nsData =
-    await nsRes.json();
+      // 最小単位量
+      const amount =
+        Number(
+          typeof mosaic.amount === "object"
+            ? mosaic.amount.value
+            : (mosaic.amount ?? mosaic.quantity ?? 0)
+        );
 
 
 
-  console.log(
-    "Namespace API:",
-    nsData
-  );
+      let divisibility = 0;
+      let displayName = idHex;
 
 
 
-  if (
-    nsData.data &&
-    nsData.data.length > 0
-  ) {
+      /*
+        XYM
+      */
+      if (
+        idHex === "6BED913FA20223F8" ||
+        idHex === "72C0212E67A08BCE"
+      ) {
+
+        displayName = "XYM";
+        divisibility = 6;
 
 
-    const namespace =
-      nsData.data[0].namespace;
+      } else {
+
+
+        /*
+          Mosaic情報取得
+        */
+        try {
+
+          const mosaicIdDecimal =
+            BigInt("0x" + idHex).toString();
 
 
 
-    if(namespace?.name){
+          const mosaicRes = await fetch(
+            new URL(
+              `/mosaics/${mosaicIdDecimal}`,
+              appState.NODE
+            )
+          );
 
-      displayName =
-        namespace.name;
+
+          const mosaicData =
+            await mosaicRes.json();
+
+
+          const mosaicInfo =
+            mosaicData.mosaic;
+
+
+
+          /*
+            可分性取得
+          */
+          divisibility =
+            mosaicInfo?.properties?.find(
+              (p) => p.id === 1
+            )?.value ?? 0;
+
+
+
+        } catch(e) {
+
+          console.warn(
+            "Mosaic情報取得失敗",
+            idHex,
+            e
+          );
+
+        }
+
+
+
+
+
+        /*
+          Namespace取得
+        */
+        try {
+
+
+          const mosaicIdDecimal =
+            BigInt("0x" + idHex).toString();
+
+
+
+          const nsRes = await fetch(
+            new URL(
+              `/namespaces?mosaicId=${mosaicIdDecimal}`,
+              appState.NODE
+            )
+          );
+
+
+
+          const nsData =
+            await nsRes.json();
+
+
+
+          console.log(
+            "Namespace API:",
+            nsData
+          );
+
+
+
+          if (
+            nsData.data &&
+            nsData.data.length > 0
+          ) {
+
+
+            const namespace =
+              nsData.data[0].namespace;
+
+
+
+            if(namespace?.name){
+
+              displayName =
+                namespace.name;
+
+            }
+
+          }
+
+
+
+          console.log(
+            "MOSAIC:",
+            idHex,
+            "NAME:",
+            displayName
+          );
+
+
+
+        } catch(e) {
+
+          console.warn(
+            "Namespace取得失敗",
+            idHex,
+            e
+          );
+
+        }
+
+
+      }
+
+
+
+
+
+      /*
+        保存
+      */
+
+      appState.mosaicInfo[idHex] = {
+
+        name: displayName,
+
+        divisibility,
+
+        amount
+
+      };
+
+
+
+
+
+      /*
+        送信用プルダウン追加
+      */
+
+      if(select){
+
+
+        const option =
+          document.createElement("option");
+
+
+        option.value = idHex;
+
+
+
+        option.textContent =
+          `${displayName} (${(amount / (10 ** divisibility)).toFixed(6)})`;
+
+
+
+        select.appendChild(option);
+
+      }
+
 
     }
 
+
+
+
+
+    /*
+      XYM残高表示
+    */
+
+    const xymId =
+      appState.networkType === 152
+        ? "72C0212E67A08BCE"
+        : "6BED913FA20223F8";
+
+
+
+    const xym =
+      appState.mosaicInfo[xymId];
+
+
+
+    document.getElementById("account-balance").textContent =
+
+      xym
+
+        ? `${(xym.amount / (10 ** xym.divisibility)).toFixed(3)} XYM`
+
+        : "0.000 XYM";
+
+
+
+
+    setStatus(
+      "account-status",
+      "取得成功",
+      "success"
+    );
+
+
+
+  } catch(e) {
+
+
+    console.error(e);
+
+
+    setStatus(
+      "account-status",
+      "取得に失敗しました",
+      "error"
+    );
+
+
   }
-
-
-
-} catch(e) {
-
-  console.warn(
-    "Namespace取得失敗",
-    idHex,
-    e
-  );
 
 }
