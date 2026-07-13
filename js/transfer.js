@@ -18,6 +18,8 @@ export async function sendTx() {
   const recipientRaw = document.getElementById("tx-recipient").value.trim();
   const amountStr = document.getElementById("tx-amount").value;
   const messageText = document.getElementById("tx-message").value || "";
+  const mosaicSelect = document.getElementById("tx-mosaic");
+  const selectedMosaicId = mosaicSelect.value;
 
   // ▼ 修正：amountStr === "" のときだけ弾く（0 は許可）
   if (!recipientRaw || amountStr === "") {
@@ -34,17 +36,33 @@ export async function sendTx() {
     return;
   }
 
-  const mosaicIdHex = getXymMosaicIdHex();
-  const mosaicIdBigInt = BigInt("0x" + mosaicIdHex);
+const mosaicSelect = document.getElementById("tx-mosaic");
+const selectedMosaicId = mosaicSelect.value;
 
-  const mosaics = [
-    new appState.sdkSymbol.descriptors.UnresolvedMosaicDescriptor(
-      new appState.sdkSymbol.models.UnresolvedMosaicId(mosaicIdBigInt),
-      new appState.sdkSymbol.models.Amount(
-        BigInt(Math.floor(amount * 1_000_000))
+if (!selectedMosaicId) {
+  setStatus("tx-status", "モザイクを選択してください。", "error");
+  return;
+}
+
+const mosaicIdBigInt = BigInt("0x" + selectedMosaicId);
+
+const divisibility =
+  appState.mosaicInfo?.[selectedMosaicId]?.divisibility ?? 0;
+
+
+const mosaics = [
+  new appState.sdkSymbol.descriptors.UnresolvedMosaicDescriptor(
+    new appState.sdkSymbol.models.UnresolvedMosaicId(mosaicIdBigInt),
+
+    new appState.sdkSymbol.models.Amount(
+      BigInt(
+        Math.floor(
+          amount * (10 ** divisibility)
+        )
       )
-    ),
-  ];
+    )
+  ),
+];
 
   const msgBytes = new TextEncoder().encode(messageText);
   const payload = new Uint8Array([0x00, ...msgBytes]);
