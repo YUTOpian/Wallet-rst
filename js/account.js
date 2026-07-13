@@ -30,11 +30,15 @@ export async function refreshAccount() {
     const mosaics = data.account.mosaics || [];
 
 
-    // モザイク情報保存
+    /*
+      モザイク情報保存
+    */
     appState.mosaicInfo = {};
 
 
-    // 送信用プルダウン
+    /*
+      送信用プルダウン
+    */
     const select = document.getElementById("tx-mosaic");
 
     if (select) {
@@ -42,9 +46,7 @@ export async function refreshAccount() {
     }
 
 
-
     for (const mosaic of mosaics) {
-
 
       const idHex =
         typeof mosaic.id === "string"
@@ -52,8 +54,9 @@ export async function refreshAccount() {
           : mosaic.id.toString(16).toUpperCase();
 
 
-
-      // 最小単位量
+      /*
+        最小単位量
+      */
       const amount =
         Number(
           typeof mosaic.amount === "object"
@@ -62,155 +65,75 @@ export async function refreshAccount() {
         );
 
 
+      /*
+        モザイク情報取得
+      */
 
       let divisibility = 0;
-      let displayName = idHex;
+      let name = idHex;
 
 
+      try {
 
-      /*
-        XYM
-      */
-      if (
-        idHex === "6BED913FA20223F8" ||
-        idHex === "72C0212E67A08BCE"
-      ) {
-
-        displayName = "XYM";
-        divisibility = 6;
+        const mosaicRes = await fetch(
+          new URL(`/mosaics/${idHex}`, appState.NODE)
+        );
 
 
-      } else {
+        const mosaicData = await mosaicRes.json();
+
+
+        const mosaicInfo = mosaicData.mosaic;
 
 
         /*
-          Mosaic情報取得
+          XYMは固定で可分性6
         */
-        try {
+        if (
+          idHex === "6BED913FA20223F8" ||
+          idHex === "72C0212E67A08BCE"
+        ) {
 
-          const mosaicIdDecimal =
-            BigInt("0x" + idHex).toString();
-
-
-
-          const mosaicRes = await fetch(
-            new URL(
-              `/mosaics/${mosaicIdDecimal}`,
-              appState.NODE
-            )
-          );
+          name = "XYM";
+          divisibility = 6;
 
 
-          const mosaicData =
-            await mosaicRes.json();
-
-
-          const mosaicInfo =
-            mosaicData.mosaic;
-
+        } else {
 
 
           /*
-            可分性取得
+            その他モザイクはAPIから取得
           */
+          name = idHex;
+
           divisibility =
             mosaicInfo?.properties?.find(
               (p) => p.id === 1
             )?.value ?? 0;
 
-
-
-        } catch(e) {
-
-          console.warn(
-            "Mosaic情報取得失敗",
-            idHex,
-            e
-          );
-
         }
 
 
+      } catch(e) {
 
+        console.warn(
+          "モザイク情報取得失敗",
+          idHex
+        );
 
 
         /*
-          Namespace取得
+          XYMの場合は失敗しても6固定
         */
-        try {
-
-
-          const mosaicIdDecimal =
-            BigInt("0x" + idHex).toString();
-
-
-
-          const nsRes = await fetch(
-            new URL(
-              `/namespaces?mosaicId=${mosaicIdDecimal}`,
-              appState.NODE
-            )
-          );
-
-
-
-          const nsData =
-            await nsRes.json();
-
-
-
-          console.log(
-            "Namespace API:",
-            nsData
-          );
-
-
-
-          if (
-            nsData.data &&
-            nsData.data.length > 0
-          ) {
-
-
-            const namespace =
-              nsData.data[0].namespace;
-
-
-
-            if(namespace?.name){
-
-              displayName =
-                namespace.name;
-
-            }
-
-          }
-
-
-
-          console.log(
-            "MOSAIC:",
-            idHex,
-            "NAME:",
-            displayName
-          );
-
-
-
-        } catch(e) {
-
-          console.warn(
-            "Namespace取得失敗",
-            idHex,
-            e
-          );
-
+        if (
+          idHex === "6BED913FA20223F8" ||
+          idHex === "72C0212E67A08BCE"
+        ) {
+          name = "XYM";
+          divisibility = 6;
         }
 
-
       }
-
-
 
 
 
@@ -219,16 +142,10 @@ export async function refreshAccount() {
       */
 
       appState.mosaicInfo[idHex] = {
-
-        name: displayName,
-
+        name,
         divisibility,
-
         amount
-
       };
-
-
 
 
 
@@ -238,7 +155,6 @@ export async function refreshAccount() {
 
       if(select){
 
-
         const option =
           document.createElement("option");
 
@@ -246,20 +162,15 @@ export async function refreshAccount() {
         option.value = idHex;
 
 
-
         option.textContent =
-          `${displayName} (${(amount / (10 ** divisibility)).toFixed(6)})`;
-
+          `${name} (${(amount / (10 ** divisibility)).toLocaleString()})`;
 
 
         select.appendChild(option);
 
       }
 
-
     }
-
-
 
 
 
@@ -273,20 +184,14 @@ export async function refreshAccount() {
         : "6BED913FA20223F8";
 
 
-
     const xym =
       appState.mosaicInfo[xymId];
 
 
-
     document.getElementById("account-balance").textContent =
-
-      xym
-
-        ? `${(xym.amount / (10 ** xym.divisibility)).toFixed(3)} XYM`
-
-        : "0.000 XYM";
-
+  xym
+    ? `${(xym.amount / (10 ** xym.divisibility)).toFixed(3)} XYM`
+    : "0.000 XYM";
 
 
 
@@ -297,9 +202,7 @@ export async function refreshAccount() {
     );
 
 
-
-  } catch(e) {
-
+  } catch(e){
 
     console.error(e);
 
@@ -309,7 +212,6 @@ export async function refreshAccount() {
       "取得に失敗しました",
       "error"
     );
-
 
   }
 
