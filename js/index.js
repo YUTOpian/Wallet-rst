@@ -17,17 +17,24 @@ function checkSSSConnection() {
 
 window.addEventListener("load", async () => {
 
-  // ① SSS 接続 / ノード選択（ネットワーク判別に必要）
+  // SSS Extension の初期化待ち
+  await new Promise(resolve => setTimeout(resolve, 1000));
+
+  // ① SSS 接続
   await autoConnectSSS();
 
-  // ② SSS が未接続なら pop-up
+
+  // ② SSS確認
   if (!window.SSS || !window.SSS.activePublicKey) {
+
     showPopup(
       "⚠️ SSS Extension とリンクしてください 🔗<br>Symbol アカウントを選択する必要があります。",
       true
     );
+
     return;
   }
+
 
   // ③ SDK を初期化
 　await initSdk();
