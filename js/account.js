@@ -138,11 +138,20 @@ export async function refreshAccount() {
           ) {
 
             namespaceName =
-              nsData.data[0]
-                ?.namespace
-                ?.name;
+            nsData.data[0]?.name ||
+            nsData.data[0]?.namespace?.name ||
+            null;
 
           }
+
+console.log(
+  "MOSAIC:",
+  idHex,
+  "NAMESPACE:",
+  namespaceName
+);
+
+          
 
 
         } catch(e) {
