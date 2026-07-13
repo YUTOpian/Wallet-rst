@@ -30,7 +30,11 @@ window.addEventListener("load", async () => {
   }
 
   // ③ SDK を初期化
-  await initSdk();
+　await initSdk();
+
+　// モザイク一覧・残高を取得
+　await refreshAccount();
+  updateMosaicList();
 
   // ========= イベント登録 =========
 
