@@ -25,7 +25,6 @@
         <div class="card">
             <h2>アカウント情報</h2>
 
-            <!-- アドレス（折り返し + コピー） -->
             <p><b>アドレス：</b></p>
             <div class="address-row">
                 <span id="account-address" class="address-text">---</span>
@@ -33,36 +32,42 @@
             </div>
 
             <p><b>残高：</b> <span id="account-balance">---</span></p>
-
         </div>
 
-        <!-- ▼ 送金 -->
+        <!-- ▼ モザイク送金 -->
         <div class="card">
             <h2>モザイク送金</h2>
-            
-<h2>モザイク送金</h2>
 
-<input id="tx-recipient" class="input-box" placeholder="宛先アドレス" />
+            <input
+                id="tx-recipient"
+                class="input-box"
+                placeholder="宛先アドレス" />
 
-<select id="tx-mosaic" class="input-box">
-    <option value="">モザイクを読み込み中…</option>
-</select>
+            <select
+                id="tx-mosaic"
+                class="input-box">
+                <option value="">モザイクを読み込み中…</option>
+            </select>
 
-<input id="tx-amount"
-       class="input-box"
-       type="number"
-       min="0"
-       step="any"
-       placeholder="数量" />
+            <input
+                id="tx-amount"
+                class="input-box"
+                type="number"
+                min="0"
+                step="any"
+                placeholder="数量" />
 
-<textarea
-    id="tx-message"
-    class="input-box"
-    placeholder="メッセージ（任意）"></textarea>
+            <textarea
+                id="tx-message"
+                class="input-box"
+                placeholder="メッセージ（任意）"></textarea>
 
-<button id="btn-transfer" class="button-primary">
-    送金する
-</button>
+            <button
+                id="btn-transfer"
+                class="button-primary">
+                送金する
+            </button>
+
             <div id="tx-status" class="status-text"></div>
         </div>
 
@@ -74,7 +79,7 @@
 
     </div>
 
-    <!-- ▼ JS -->
+    <!-- ▼ JavaScript -->
     <script type="module" src="js/config.js"></script>
     <script type="module" src="js/utils.js"></script>
     <script type="module" src="js/ui.js"></script>
@@ -86,4 +91,5 @@
     <script type="module" src="js/index.js"></script>
 
 </body>
+
 </html>
