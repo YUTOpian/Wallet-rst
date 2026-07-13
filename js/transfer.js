@@ -36,8 +36,6 @@ export async function sendTx() {
     return;
   }
 
-const mosaicSelect = document.getElementById("tx-mosaic");
-const selectedMosaicId = mosaicSelect.value;
 
 if (!selectedMosaicId) {
   setStatus("tx-status", "モザイクを選択してください。", "error");
