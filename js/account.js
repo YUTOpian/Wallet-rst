@@ -189,9 +189,9 @@ export async function refreshAccount() {
 
 
     document.getElementById("account-balance").textContent =
-      xym
-        ? `${(xym.amount / (10 ** xym.divisibility)).toLocaleString()} XYM`
-        : "0 XYM";
+  xym
+    ? `${(xym.amount / (10 ** xym.divisibility)).toFixed(3)} XYM`
+    : "0.000 XYM";
 
 
 
