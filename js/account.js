@@ -49,7 +49,7 @@ export async function refreshAccount() {
       const idHex =
         typeof mosaic.id === "string"
           ? mosaic.id.toUpperCase()
-          : mosaic.id.toString(16).toUpperCase();
+          : BigInt(mosaic.id).toString(16).toUpperCase();
 
 
 
@@ -58,7 +58,7 @@ export async function refreshAccount() {
         Number(
           typeof mosaic.amount === "object"
             ? mosaic.amount.value
-            : (mosaic.amount ?? mosaic.quantity ?? 0)
+            : mosaic.amount
         );
 
 
@@ -83,16 +83,15 @@ export async function refreshAccount() {
       } else {
 
 
+        const mosaicIdDecimal =
+          BigInt("0x" + idHex).toString();
+
+
+
         /*
-          Mosaic情報取得
+          モザイク情報取得
         */
         try {
-
-
-          const mosaicIdDecimal =
-            BigInt("0x" + idHex).toString();
-
-
 
           const mosaicRes = await fetch(
             new URL(
@@ -102,20 +101,17 @@ export async function refreshAccount() {
           );
 
 
-          const mosaicData = await mosaicRes.json();
+          const mosaicData =
+            await mosaicRes.json();
 
 
           const mosaicInfo =
             mosaicData.mosaic;
 
 
-
-          /*
-            可分性
-          */
           divisibility =
             mosaicInfo?.properties?.find(
-              (p) => p.id === 1
+              p => p.id === 1
             )?.value ?? 0;
 
 
@@ -132,25 +128,18 @@ export async function refreshAccount() {
 
 
 
-
         /*
           Namespace取得
         */
         try {
 
 
-          const mosaicIdDecimal =
-            BigInt("0x" + idHex).toString();
-
-
-
           const nsRes = await fetch(
             new URL(
-              `/namespaces/mosaic?mosaicId=${mosaicIdDecimal}`,
+              `/namespaces/mosaic/${mosaicIdDecimal}`,
               appState.NODE
             )
           );
-
 
 
           const nsData =
@@ -158,23 +147,43 @@ export async function refreshAccount() {
 
 
 
+          console.log(
+            "Namespace DATA:",
+            nsData
+          );
+
+
+
           if (
-            nsData.data &&
-            nsData.data.length > 0
+            nsData.id &&
+            nsData.id !== ""
           ) {
 
-            displayName =
-              nsData.data[0].name;
+            if (
+              nsData.name
+            ) {
+
+              displayName =
+                nsData.name;
+
+            }
 
           }
 
 
 
-          console.log(
-            "NAMESPACE:",
-            idHex,
-            displayName
-          );
+          /*
+            別形式対応
+          */
+          if (
+            nsData.names &&
+            nsData.names.length > 0
+          ){
+
+            displayName =
+              nsData.names[0].name;
+
+          }
 
 
 
@@ -194,10 +203,10 @@ export async function refreshAccount() {
 
 
 
-
       /*
         保存
       */
+
       appState.mosaicInfo[idHex] = {
 
         name: displayName,
@@ -211,10 +220,10 @@ export async function refreshAccount() {
 
 
 
-
       /*
-        送信モザイク選択
+        プルダウン表示
       */
+
       if(select){
 
 
@@ -225,10 +234,8 @@ export async function refreshAccount() {
         option.value = idHex;
 
 
-
         option.textContent =
           `${displayName} (${(amount / (10 ** divisibility)).toFixed(6)})`;
-
 
 
         select.appendChild(option);
@@ -250,7 +257,6 @@ export async function refreshAccount() {
       appState.networkType === 152
         ? "72C0212E67A08BCE"
         : "6BED913FA20223F8";
-
 
 
     const xym =
