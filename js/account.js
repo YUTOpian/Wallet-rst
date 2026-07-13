@@ -42,6 +42,7 @@ export async function refreshAccount() {
     }
 
 
+
     for (const mosaic of mosaics) {
 
 
@@ -63,19 +64,20 @@ export async function refreshAccount() {
 
 
       let divisibility = 0;
-      let displayName = idHex;
+      let name = idHex;
+      let namespaceName = null;
 
 
 
       /*
-        XYM
+        XYM判定
       */
       if (
         idHex === "6BED913FA20223F8" ||
         idHex === "72C0212E67A08BCE"
       ) {
 
-        displayName = "XYM";
+        name = "XYM";
         divisibility = 6;
 
 
@@ -88,27 +90,19 @@ export async function refreshAccount() {
         try {
 
           const mosaicRes = await fetch(
-            new URL(
-              `/mosaics/${idHex}`,
-              appState.NODE
-            )
+            new URL(`/mosaics/${BigInt("0x" + idHex)}`, appState.NODE)
           );
 
 
-          const mosaicData =
-            await mosaicRes.json();
+          const mosaicData = await mosaicRes.json();
 
-
-          const mosaicInfo =
-            mosaicData.mosaic;
-
+          const mosaicInfo = mosaicData.mosaic;
 
 
           divisibility =
             mosaicInfo?.properties?.find(
               (p) => p.id === 1
             )?.value ?? 0;
-
 
 
         } catch(e) {
@@ -129,21 +123,13 @@ export async function refreshAccount() {
 
           const nsRes = await fetch(
             new URL(
-              `/namespaces/mosaic/${idHex}`,
+              `/namespaces/mosaic/${BigInt("0x" + idHex)}`,
               appState.NODE
             )
           );
 
 
-          const nsData =
-            await nsRes.json();
-
-
-          console.log(
-            "Namespace DATA",
-            idHex,
-            nsData
-          );
+          const nsData = await nsRes.json();
 
 
           if (
@@ -151,37 +137,10 @@ export async function refreshAccount() {
             nsData.data.length > 0
           ) {
 
-
-            const namespaceId =
-              nsData.data[0].namespaceId;
-
-
-            const nameRes =
-              await fetch(
-                new URL(
-                  `/namespaces/${namespaceId}`,
-                  appState.NODE
-                )
-              );
-
-
-            const nameData =
-              await nameRes.json();
-
-
-
-            /*
-              Symbol REST API v1形式
-            */
-            if (
-              nameData.namespace?.name
-            ) {
-
-              displayName =
-                nameData.namespace.name;
-
-            }
-
+            namespaceName =
+              nsData.data[0]
+                ?.namespace
+                ?.name;
 
           }
 
@@ -190,13 +149,14 @@ export async function refreshAccount() {
 
           console.warn(
             "Namespace取得失敗",
-            idHex,
-            e
+            idHex
           );
 
         }
 
+
       }
+
 
 
 
@@ -206,13 +166,17 @@ export async function refreshAccount() {
 
       appState.mosaicInfo[idHex] = {
 
-        name: displayName,
+        name:
+          name === "XYM"
+            ? "XYM"
+            : (namespaceName || idHex),
 
         divisibility,
 
         amount
 
       };
+
 
 
 
@@ -231,11 +195,19 @@ export async function refreshAccount() {
         option.value = idHex;
 
 
+
+        const displayName =
+          (
+            idHex === "6BED913FA20223F8" ||
+            idHex === "72C0212E67A08BCE"
+          )
+          ? "XYM"
+          : (namespaceName || idHex);
+
+
+
         option.textContent =
-          `${displayName} (${(
-            amount /
-            (10 ** divisibility)
-          ).toLocaleString()})`;
+          `${displayName} (${(amount / (10 ** divisibility)).toFixed(6)})`;
 
 
 
@@ -259,7 +231,6 @@ export async function refreshAccount() {
         : "6BED913FA20223F8";
 
 
-
     const xym =
       appState.mosaicInfo[xymId];
 
@@ -269,10 +240,7 @@ export async function refreshAccount() {
 
       xym
 
-        ? `${(
-            xym.amount /
-            (10 ** xym.divisibility)
-          ).toFixed(3)} XYM`
+        ? `${(xym.amount / (10 ** xym.divisibility)).toFixed(3)} XYM`
 
         : "0.000 XYM";
 
@@ -287,7 +255,7 @@ export async function refreshAccount() {
 
 
 
-  } catch(e) {
+  } catch(e){
 
 
     console.error(e);
