@@ -33,28 +33,33 @@ function decodeMessage(payload) {
 /* ============================================================
    XYM amount ＋ direction 抽出
 ============================================================ */
-function extractAmount(tx, myAddress) {
+function extractAmount(tx) {
   if (!tx.mosaics || tx.mosaics.length === 0) return null;
 
-  const mosaic = tx.mosaics[0];
-
-  const XYM_ID =
-    appState.networkType === NetworkType.TESTNET
-      ? "72C0212E67A08BCE"
-      : "6BED913FA20223F8";
-
-  if (mosaic.id !== XYM_ID) return null;
-
-  const amount = Number(mosaic.amount) / 1_000_000;
-
-  // ▼ signer と自分の公開鍵で送信/受信を判定
+  // 送信・受信を判定
   const signer = (tx.signerPublicKey || "").toUpperCase();
   const myPub = (appState.currentPubKey || "").toUpperCase();
-
   const direction = signer === myPub ? "send" : "receive";
 
+  // すべてのモザイクを取得
+  const mosaics = tx.mosaics.map((mosaic) => {
+    const info = appState.mosaicInfo?.[mosaic.id];
+
+    // divisibility が分からなければ 0 とする
+    const divisibility = info?.divisibility ?? 0;
+
+    // 名前が分からなければモザイクIDを表示
+    const name = info?.name ?? mosaic.id;
+
+    return {
+      id: mosaic.id,
+      name,
+      amount: Number(mosaic.amount) / (10 ** divisibility),
+    };
+  });
+
   return {
-    amount,
+    mosaics,
     direction,
   };
 }
@@ -72,20 +77,38 @@ function getExplorerUrl(hash) {
    1件の TX カード（ベースは壊さず最適化）
 ============================================================ */
 export function createTxCard(txInfo) {
-  const { hash, signer, msg, state, timestamp, amount, direction } = txInfo;
+  const {
+    hash,
+    signer,
+    msg,
+    state,
+    timestamp,
+    mosaics,
+    direction,
+  } = txInfo;
 
   const explorer = getExplorerUrl(hash);
 
   let amountHtml = "";
-  if (amount != null) {
-    const color = direction === "receive" ? "#4ade80" : "#f87171"; // 緑 / 赤
-    const label = direction === "receive" ? "受信" : "送信";
 
-    amountHtml = `
-      <div class="tx-amount" style="color:${color}; font-weight:bold;">
-        ${label}: ${amount} XYM
-      </div>
-    `;
+  if (mosaics && mosaics.length > 0) {
+    const color = direction === "receive"
+      ? "#4ade80"
+      : "#f87171";
+
+    const label = direction === "receive"
+      ? "受信"
+      : "送信";
+
+    amountHtml = mosaics
+      .map(
+        (mosaic) => `
+          <div class="tx-amount" style="color:${color}; font-weight:bold;">
+            ${label}: ${mosaic.amount} ${mosaic.name}
+          </div>
+        `
+      )
+      .join("");
   }
 
   return `
@@ -94,8 +117,12 @@ export function createTxCard(txInfo) {
          onclick="window.open('${explorer}', '_blank')">
 
       <div class="tx-body">
+
         <div class="tx-title">${msg}</div>
-        <div class="tx-status">${state.toUpperCase()}</div>
+
+        <div class="tx-status">
+          ${state.toUpperCase()}
+        </div>
 
         ${amountHtml}
 
@@ -104,7 +131,9 @@ export function createTxCard(txInfo) {
             ? `<div class="tx-time">🕒 ${formatTimestamp(timestamp)}</div>`
             : ""
         }
+
       </div>
+
     </div>
   `;
 }
@@ -116,7 +145,7 @@ function appendTx(txInfo) {
 }
 
 const txMap = {};
-const soundPlayed = {}; // ← 音の多重防止（1トランザクションにつき1回のみ）
+const soundPlayed = {};
 
 /* ============================================================
    未承認 → 承認（昇格）
@@ -168,7 +197,7 @@ export async function loadRecentTx() {
         const meta = item.meta;
         const tx = item.transaction;
 
-        const amountInfo = extractAmount(tx, address);
+        const amountInfo = extractAmount(tx);
 
         const txInfo = {
           hash: meta.hash,
@@ -176,33 +205,37 @@ export async function loadRecentTx() {
           msg: decodeMessage(tx.message),
           state: "confirmed",
           timestamp: meta.timestamp,
-          amount: amountInfo?.amount ?? null,
+
+          mosaics: amountInfo?.mosaics ?? [],
           direction: amountInfo?.direction ?? null,
         };
 
         txMap[meta.hash] = txInfo;
-        soundPlayed[meta.hash] = true; // 既存履歴は音を鳴らさない
+        soundPlayed[meta.hash] = true;
 
         return createTxCard(txInfo);
       })
       .join("");
+
   } catch (e) {
+    console.error(e);
     el.textContent = "読み込みエラー";
   }
 }
-
 /* ============================================================
    Live Tx（WS）
 ============================================================ */
 export function initLiveTx(address) {
+
   /* 未承認 */
   addCallback(`unconfirmedAdded/${address}`, (payload) => {
+
     const tx = payload.data;
     const hash = tx.meta.hash;
 
     if (txMap[hash]) return;
 
-    const amountInfo = extractAmount(tx.transaction, address);
+    const amountInfo = extractAmount(tx.transaction);
 
     const txInfo = {
       hash,
@@ -210,7 +243,7 @@ export function initLiveTx(address) {
       msg: decodeMessage(tx.transaction.message),
       state: "unconfirmed",
       timestamp: null,
-      amount: amountInfo?.amount ?? null,
+      mosaics: amountInfo?.mosaics ?? [],
       direction: amountInfo?.direction ?? null,
     };
 
@@ -219,15 +252,19 @@ export function initLiveTx(address) {
     appendTx(txInfo);
   });
 
+
   /* 承認 */
   addCallback(`confirmedAdded/${address}`, async (payload) => {
+
     const tx = payload.data;
     const hash = tx.meta.hash;
 
     const blockTs = await getBlockTimestamp(tx.meta.height);
 
+
     if (!txMap[hash]) {
-      const amountInfo = extractAmount(tx.transaction, address);
+
+      const amountInfo = extractAmount(tx.transaction);
 
       const txInfo = {
         hash,
@@ -235,15 +272,19 @@ export function initLiveTx(address) {
         msg: decodeMessage(tx.transaction.message),
         state: "confirmed",
         timestamp: blockTs,
-        amount: amountInfo?.amount ?? null,
+        mosaics: amountInfo?.mosaics ?? [],
         direction: amountInfo?.direction ?? null,
       };
 
       txMap[hash] = txInfo;
 
       appendTx(txInfo);
+
     } else {
+
       promoteTx(hash, blockTs);
+
     }
+
   });
 }
