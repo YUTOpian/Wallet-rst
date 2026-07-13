@@ -88,6 +88,7 @@ export async function refreshAccount() {
         */
         try {
 
+
           const mosaicIdDecimal =
             BigInt("0x" + idHex).toString();
 
@@ -145,13 +146,15 @@ export async function refreshAccount() {
 
 
 
+          /*
+            Mosaic → Namespace
+          */
           const nsRes = await fetch(
             new URL(
-              `/namespaces?mosaicId=${mosaicIdDecimal}`,
+              `/namespaces/mosaic/${mosaicIdDecimal}`,
               appState.NODE
             )
           );
-
 
 
           const nsData =
@@ -160,40 +163,50 @@ export async function refreshAccount() {
 
 
           console.log(
-            "Namespace API:",
+            "Mosaic Namespace:",
             nsData
           );
 
 
 
-          if (
-            nsData.data &&
-            nsData.data.length > 0
-          ) {
+          if(nsData.id){
 
 
-            const namespace =
-              nsData.data[0].namespace;
+            /*
+              Namespace ID → 名前取得
+            */
+
+            const detailRes = await fetch(
+              new URL(
+                `/namespaces/${nsData.id}`,
+                appState.NODE
+              )
+            );
+
+
+            const detailData =
+              await detailRes.json();
 
 
 
-            if(namespace?.name){
+            console.log(
+              "Namespace Detail:",
+              detailData
+            );
+
+
+
+            if(
+              detailData.namespace?.name
+            ){
 
               displayName =
-                namespace.name;
+                detailData.namespace.name;
 
             }
 
+
           }
-
-
-
-          console.log(
-            "MOSAIC:",
-            idHex,
-            "NAME:",
-            displayName
-          );
 
 
 
@@ -233,7 +246,7 @@ export async function refreshAccount() {
 
 
       /*
-        送信用プルダウン追加
+        送信用プルダウン
       */
 
       if(select){
@@ -312,7 +325,5 @@ export async function refreshAccount() {
 
 
   }
-
-}
 
 }
