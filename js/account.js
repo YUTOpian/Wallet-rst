@@ -27,6 +27,9 @@ export async function refreshAccount() {
 
     const data = await res.json();
 
+    console.log("ACCOUNT DATA:", data);
+    console.log("MOSAICS:", data.account.mosaics);
+    
 
     const mosaics = data.account.mosaics || [];
 
