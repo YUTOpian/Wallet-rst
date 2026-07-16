@@ -4,7 +4,7 @@
 ブラウザだけで即使える、安全・シンプルなSymbol (XYM) Webウォレットです。
 
 ## 使い方
-1. [ここをクリックで即開く → GitHub Pages](https://mikunnem.github.io/Symbol_Simple_Wallet/)
+1. [ここをクリックで即開く → GitHub Pages](https://yutopian.github.io/Wallet-rst/)
 2. SSS Extension がインストールされていれば自動接続
 3. 残高表示・XYM/モザイク送金が即可能！
 
