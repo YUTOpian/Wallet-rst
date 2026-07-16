@@ -31,23 +31,44 @@
                 <button id="copy-address-btn" class="copy-btn">🗒️</button>
             </div>
 
-            <p><b>残高：</b> <span id="account-balance">---</span></p>
+            <p><b>残高：</b>
+                <span id="account-balance">---</span>
+            </p>
+
+            <hr>
+
+            <h3>保有モザイク</h3>
+
+            <div id="mosaic-list">
+                読み込み中...
+            </div>
+
         </div>
 
         <!-- ▼ モザイク送金 -->
-        <div class="card">
+        <div class="card" id="transfer-card">
+
             <h2>モザイク送金</h2>
+
+            <p>
+                <b>送信モザイク：</b>
+                <span id="selected-mosaic-name">未選択</span>
+            </p>
+
+            <p>
+                <b>保有数量：</b>
+                <span id="selected-mosaic-balance">---</span>
+            </p>
+
+            <!-- 選択されたモザイクIDを保持 -->
+            <input
+                type="hidden"
+                id="selected-mosaic-id" />
 
             <input
                 id="tx-recipient"
                 class="input-box"
                 placeholder="宛先アドレス" />
-
-            <select
-                id="tx-mosaic"
-                class="input-box">
-                <option value="">モザイクを読み込み中…</option>
-            </select>
 
             <input
                 id="tx-amount"
@@ -69,6 +90,7 @@
             </button>
 
             <div id="tx-status" class="status-text"></div>
+
         </div>
 
         <!-- ▼ 最近のトランザクション -->
@@ -79,10 +101,7 @@
 
     </div>
 
-    <!-- ▼ JavaScript -->
-
     <script type="module" src="js/index.js"></script>
-
 
 </body>
 
