@@ -30,6 +30,70 @@ export async function refreshAccount() {
     const mosaics = data.account.mosaics || [];
 
 
+    const mosaics = data.account.mosaics || [];
+
+
+// ============================
+// ネームスペース取得
+// ============================
+
+const namespaceMap = {};
+
+const mosaicIds = mosaics.map(m =>
+  typeof m.id === "string"
+    ? m.id.toUpperCase()
+    : m.id.toString(16).toUpperCase()
+);
+
+
+try {
+
+  const namespaceRes = await fetch(
+    new URL(
+      "/namespaces/mosaic/names",
+      appState.NODE
+    ),
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        mosaicIds
+      })
+    }
+  );
+
+
+  const namespaceData =
+    await namespaceRes.json();
+
+
+  for (const item of namespaceData) {
+
+    if (
+      item.names &&
+      item.names.length > 0
+    ) {
+
+      namespaceMap[item.mosaicId.toUpperCase()] =
+        item.names[0];
+
+    }
+
+  }
+
+
+} catch(e) {
+
+  console.warn(
+    "ネームスペース取得失敗",
+    e
+  );
+
+}
+
+
     /*
       モザイク情報保存
     */
