@@ -29,8 +29,73 @@ export async function refreshAccount() {
 
     const mosaics = data.account.mosaics || [];
 
-    console.log("mosaics:", mosaics);
 
+/*
+  モザイクネームスペース取得
+*/
+const namespaceMap = {};
+
+try {
+
+  const mosaicIds = mosaics.map(m => {
+
+    return typeof m.id === "string"
+      ? m.id.toUpperCase()
+      : m.id.toString(16).toUpperCase();
+
+  });
+
+
+  const namespaceRes = await fetch(
+    new URL(
+      "/namespaces/mosaic/names",
+      appState.NODE
+    ),
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        mosaicIds
+      })
+    }
+  );
+
+
+  const namespaceData =
+    await namespaceRes.json();
+
+
+  for (const item of namespaceData.mosaicNames || []) {
+
+    const mosaicId =
+      item.mosaicId.toUpperCase();
+
+
+    if (
+      item.names &&
+      item.names.length > 0
+    ) {
+
+      namespaceMap[mosaicId] =
+        item.names[0];
+
+    }
+
+  }
+
+
+} catch(e) {
+
+  console.warn(
+    "ネームスペース取得失敗",
+    e
+  );
+
+}
+
+    
 
     /*
       モザイク情報保存
@@ -97,7 +162,6 @@ const idHex =
 
 
         const mosaicData = await mosaicRes.json();
-
 
         const mosaicInfo = mosaicData.mosaic;
 
@@ -235,10 +299,6 @@ if (mosaicList) {
     }
 
 
-
-
-
-
     /*
       XYM残高表示
     */
@@ -259,6 +319,51 @@ if (mosaicList) {
     : "0.000 XYM";
 
 
+/*
+  ネームスペース表示更新
+*/
+if (mosaicList) {
+
+  const items =
+    mosaicList.querySelectorAll(".mosaic-item");
+
+
+  items.forEach(item => {
+
+    const id =
+      item.querySelector(".mosaic-id")
+        ?.textContent;
+
+
+    if (!id) return;
+
+
+    const name =
+      (
+        id === "6BED913FA20223F8" ||
+        id === "72C0212E67A08BCE"
+      )
+        ? "XYM"
+        : (namespaceMap[id] ?? id);
+
+
+    const nameElement =
+      item.querySelector(".mosaic-name");
+
+
+    if (nameElement) {
+
+      nameElement.textContent =
+        name;
+
+    }
+
+  });
+
+}
+
+
+    
 
     setStatus(
       "account-status",
