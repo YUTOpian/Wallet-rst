@@ -179,12 +179,7 @@ if (mosaicList) {
 
       }
 
-    }
-
-
-
-
-    /*
+          /*
   保有モザイク一覧へ追加
 */
 if (mosaicList) {
@@ -229,6 +224,13 @@ if (mosaicList) {
   mosaicList.appendChild(item);
 
 }
+
+    }
+
+
+
+
+
 
     /*
       XYM残高表示
