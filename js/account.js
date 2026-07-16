@@ -29,6 +29,8 @@ export async function refreshAccount() {
 
     const mosaics = data.account.mosaics || [];
 
+    console.log("mosaics:", mosaics);
+
 
     /*
       モザイク情報保存
@@ -57,10 +59,15 @@ if (mosaicList) {
 
     for (const mosaic of mosaics) {
 
-      const idHex =
-        typeof mosaic.id === "string"
-          ? mosaic.id.toUpperCase()
-          : mosaic.id.toString(16).toUpperCase();
+const idHex =
+  typeof mosaic.id === "object"
+    ? BigInt(mosaic.id.lower)
+        .toString(16)
+        .toUpperCase()
+    : mosaic.id
+        .toString()
+        .toUpperCase();
+
 
 
       /*
