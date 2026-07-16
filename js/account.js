@@ -65,30 +65,17 @@ try {
   );
 
 
-for (const item of namespaceData.mosaicNames || []) {
+for (const item of namespaceData) {
 
-  const mosaicId =
-    item.mosaicId.toUpperCase();
+    if (
+      item.names &&
+      item.names.length > 0
+    ) {
 
+      namespaceMap[item.mosaicId.toUpperCase()] =
+        item.names[0];
 
-  // XYMは常にXYM表示
-  if (
-    mosaicId === "6BED913FA20223F8" ||
-    mosaicId === "72C0212E67A08BCE"
-  ) {
-    continue;
-  }
-
-
-  if (
-    item.names &&
-    item.names.length > 0
-  ) {
-
-    namespaceMap[mosaicId] =
-      item.names[0];
-
-  }
+    }
 
 }
 
