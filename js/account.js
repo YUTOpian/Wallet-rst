@@ -37,6 +37,15 @@ export async function refreshAccount() {
 
 
     /*
+  保有モザイク一覧
+*/
+const mosaicList = document.getElementById("mosaic-list");
+
+if (mosaicList) {
+  mosaicList.innerHTML = "";
+}
+
+    /*
       送信用プルダウン
     */
     const select = document.getElementById("tx-mosaic");
@@ -173,6 +182,53 @@ export async function refreshAccount() {
     }
 
 
+
+
+    /*
+  保有モザイク一覧へ追加
+*/
+if (mosaicList) {
+
+  const item = document.createElement("div");
+
+  item.className = "mosaic-item";
+
+  item.innerHTML = `
+    <div class="mosaic-left">
+      <div class="mosaic-name">${name}</div>
+      <div class="mosaic-id">${idHex}</div>
+    </div>
+
+    <div class="mosaic-right">
+      <div class="mosaic-amount">
+        ${(amount / (10 ** divisibility)).toLocaleString()}
+      </div>
+    </div>
+  `;
+
+  item.onclick = () => {
+
+    // 既存のプルダウンも同期
+    if (select) {
+      select.value = idHex;
+    }
+
+    // 新UIへ反映
+    document.getElementById("selected-mosaic-id").value = idHex;
+    document.getElementById("selected-mosaic-name").textContent = name;
+    document.getElementById("selected-mosaic-balance").textContent =
+      `${(amount / (10 ** divisibility)).toLocaleString()} ${name}`;
+
+    // 送金フォームへスクロール
+    document.getElementById("transfer-card").scrollIntoView({
+      behavior: "smooth"
+    });
+
+  };
+
+  mosaicList.appendChild(item);
+
+}
 
     /*
       XYM残高表示
