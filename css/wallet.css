@@ -361,3 +361,116 @@ body {
     font-size: 16px;
   }
 }
+
+
+/* ============================================================
+   保有モザイク一覧
+============================================================ */
+
+#mosaic-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.mosaic-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 12px;
+
+  padding: 14px 16px;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mosaic-item:hover {
+  background: #1e3a8a;
+  border-color: #6366f1;
+  transform: translateY(-2px);
+}
+
+.mosaic-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.mosaic-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.mosaic-id {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 4px;
+  word-break: break-all;
+}
+
+.mosaic-right {
+  text-align: right;
+}
+
+.mosaic-amount {
+  font-size: 18px;
+  font-weight: bold;
+  color: #4ade80;
+}
+
+.mosaic-label {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+/* ============================================================
+   送金カード
+============================================================ */
+
+.selected-mosaic {
+  background: #111827;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 18px;
+}
+
+.selected-mosaic-name {
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.selected-mosaic-balance {
+  margin-top: 6px;
+  color: #4ade80;
+  font-size: 15px;
+}
+
+/* ============================================================
+   モバイル
+============================================================ */
+
+@media (max-width: 768px) {
+
+  .mosaic-item {
+    padding: 16px;
+  }
+
+  .mosaic-name {
+    font-size: 17px;
+  }
+
+  .mosaic-amount {
+    font-size: 19px;
+  }
+
+  .selected-mosaic {
+    padding: 16px;
+  }
+}
