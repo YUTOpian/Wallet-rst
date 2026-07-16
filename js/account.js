@@ -261,7 +261,14 @@ if (mosaicList) {
 
   item.innerHTML = `
     <div class="mosaic-left">
-      <div class="mosaic-name">${name}</div>
+      <div class="mosaic-name">${
+  (
+    idHex === "6BED913FA20223F8" ||
+    idHex === "72C0212E67A08BCE"
+  )
+    ? "XYM"
+    : (namespaceMap[idHex] ?? name)
+}</div>
       <div class="mosaic-id">${idHex}</div>
     </div>
 
