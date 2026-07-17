@@ -78,15 +78,16 @@ function getExplorerUrl(hash) {
 ============================================================ */
 export function createTxCard(txInfo) {
 
-  const {
-    hash,
-    msg,
-    state,
-    timestamp,
-    mosaics,
-    direction,
-    recipient,
-  } = txInfo;
+const {
+  hash,
+  msg,
+  state,
+  timestamp,
+  mosaics,
+  direction,
+  sender,
+  recipient,
+} = txInfo;
 
 
   const explorer = getExplorerUrl(hash);
@@ -158,9 +159,31 @@ export function createTxCard(txInfo) {
 
 
 
-      <div class="tx-status">
-        ${state.toUpperCase()}
-      </div>
+    <div class="tx-status">
+  ${state.toUpperCase()}
+</div>
+
+
+<div class="tx-address">
+
+  送金元:
+
+  <br>
+
+  ${sender ?? "---"}
+
+</div>
+
+
+<div class="tx-address">
+
+  送金先:
+
+  <br>
+
+  ${recipient ?? "---"}
+
+</div>
 
 
 
@@ -281,7 +304,12 @@ export async function loadRecentTx() {
 
         const txInfo = {
   hash: meta.hash,
-  signer: tx.signerPublicKey,
+
+  signer:
+    tx.signerPublicKey,
+
+  sender:
+    tx.signerPublicKey,
 
   recipient:
     tx.recipientAddress,
@@ -334,6 +362,7 @@ export function initLiveTx(address) {
     const txInfo = {
       hash,
       signer: tx.transaction.signerPublicKey,
+      recipient: tx.transaction.recipientAddress,
       msg: decodeMessage(tx.transaction.message),
       state: "unconfirmed",
       timestamp: null,
