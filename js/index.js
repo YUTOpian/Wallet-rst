@@ -227,100 +227,92 @@ async()=>{
   // ============================
 
 
- const sendMosaicList =
-  document.getElementById(
-    "send-mosaic-list"
-  );
+document
+.getElementById(
+  "send-mosaic-list"
+)
+?.addEventListener(
+  "click",
+  e=>{
 
 
-sendMosaicList.onclick =
-function(e){
+    const item =
+      e.target.closest(
+        ".mosaic-item"
+      );
 
 
-  const item =
-    e.target.closest(
-      ".mosaic-item"
+    if(!item){
+
+      return;
+
+    }
+
+
+    console.log(
+      "モザイククリック",
+      item
     );
 
 
-  if(!item){
+    const name =
+      item
+      .querySelector(
+        ".mosaic-name"
+      )
+      ?.textContent
+      .trim();
 
-    return;
+
+    const id =
+      item
+      .querySelector(
+        ".mosaic-id"
+      )
+      ?.textContent
+      .trim();
+
+
+    const amount =
+      item
+      .querySelector(
+        ".mosaic-amount"
+      )
+      ?.textContent
+      .trim();
+
+
+    document
+    .getElementById(
+      "selected-mosaic-name"
+    )
+    .textContent =
+      name;
+
+
+    document
+    .getElementById(
+      "selected-mosaic-id"
+    )
+    .value =
+      id;
+
+
+    document
+    .getElementById(
+      "selected-mosaic-balance"
+    )
+    .textContent =
+      amount;
+
+
+    showPage(
+      transferPage
+    );
+
 
   }
-
-
-  console.log(
-    "モザイククリック",
-    item
-  );
-
-
-  const name =
-    item
-    .querySelector(
-      ".mosaic-name"
-    )
-    ?.textContent
-    .trim();
-
-
-  const id =
-    item
-    .querySelector(
-      ".mosaic-id"
-    )
-    ?.textContent
-    .trim();
-
-
-  const amount =
-    item
-    .querySelector(
-      ".mosaic-amount"
-    )
-    ?.textContent
-    .trim();
-
-
-  document
-  .getElementById(
-    "selected-mosaic-name"
-  )
-  .textContent =
-    name;
-
-
-  document
-  .getElementById(
-    "selected-mosaic-id"
-  )
-  .value =
-    id;
-
-
-  document
-  .getElementById(
-    "selected-mosaic-balance"
-  )
-  .textContent =
-    amount;
-
-
-  console.log(
-    "送金対象:",
-    name,
-    id,
-    amount
-  );
-
-
-  showPage(
-    transferPage
-  );
-
-
-};
+);
 
 
 
