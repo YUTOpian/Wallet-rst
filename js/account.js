@@ -279,56 +279,49 @@ if (mosaicList) {
     </div>
   `;
 
-  item.onclick = () => {
+item.onclick = () => {
+
   console.log("モザイククリック:", idHex);
-    // 既存のプルダウンも同期
-    if (select) {
-      select.value = idHex;
-    }
 
-// 新UIへ反映
-document.getElementById("selected-mosaic-id").value = idHex;
 
-document.getElementById("selected-mosaic-name").textContent =
-  (
-    idHex === "6BED913FA20223F8" ||
-    idHex === "72C0212E67A08BCE"
-  )
-    ? "XYM"
-    : (namespaceMap[idHex] ?? name);
+  // 既存のプルダウンも同期
+  if (select) {
+    select.value = idHex;
+  }
 
-document.getElementById("selected-mosaic-balance").textContent =
-  `${(amount / (10 ** divisibility)).toLocaleString()}`;
 
-// 送金ポップアップ表示
-const dialog =
-  document.getElementById("transfer-dialog");
+  // 選択モザイクID保存
+  document.getElementById("selected-mosaic-id").value = idHex;
 
-if (dialog) {
+
+  document.getElementById("selected-mosaic-name").textContent =
+    (
+      idHex === "6BED913FA20223F8" ||
+      idHex === "72C0212E67A08BCE"
+    )
+      ? "XYM"
+      : (namespaceMap[idHex] ?? name);
+
+
+  document.getElementById("selected-mosaic-balance").textContent =
+    `${(amount / (10 ** divisibility)).toLocaleString()}`;
+
+
+  // 送金ポップアップ表示
   const dialog =
-  document.getElementById("transfer-dialog");
+    document.getElementById("transfer-dialog");
 
 
-console.log("dialog:", dialog);
+  console.log("dialog:", dialog);
 
 
-if (dialog) {
+  if (dialog) {
 
-  dialog.showModal();
+    dialog.showModal();
 
-}
+  }
 
-  dialog.showModal();
-
-}
-
-  };
-
-  mosaicList.appendChild(item);
-
-}
-
-    }
+};
 
 
     /*
