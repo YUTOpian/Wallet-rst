@@ -35,6 +35,35 @@ window.addEventListener("load", async () => {
   const receivePage = document.getElementById("receive-page");
   const harvestPage = document.getElementById("harvest-page");
 
+  // ============================
+// タブ
+// ============================
+const tokenTab = document.getElementById("token-tab");
+const activityTab = document.getElementById("activity-tab");
+
+const tokenPanel = document.getElementById("token-panel");
+const activityPanel = document.getElementById("activity-panel");
+
+tokenTab?.addEventListener("click", () => {
+
+  tokenTab.classList.add("active");
+  activityTab.classList.remove("active");
+
+  tokenPanel.classList.add("active");
+  activityPanel.classList.remove("active");
+
+});
+
+activityTab?.addEventListener("click", () => {
+
+  activityTab.classList.add("active");
+  tokenTab.classList.remove("active");
+
+  activityPanel.classList.add("active");
+  tokenPanel.classList.remove("active");
+
+});
+
   
   // ============================
   // ページ切替共通関数
