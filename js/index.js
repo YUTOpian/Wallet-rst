@@ -6,6 +6,7 @@ import { loadRecentTx, initLiveTx } from "./transactions.js";
 import { initWebSocket } from "./ws.js";
 import { initSdk } from "./sdk.js";
 import { showPopup } from "./utils.js";
+import { checkHarvestStatus } from "./harvest.js";
 
 window.addEventListener("load", async () => {
   // ============================
@@ -129,7 +130,7 @@ window.addEventListener("load", async () => {
 // ============================
 // ハーベスト画面表示
 // ============================
-document.getElementById("harvest-btn")?.addEventListener("click", () => {
+document.getElementById("harvest-btn")?.addEventListener("click", async () => {
 
   console.log("ハーベスト画面へ");
 
@@ -145,8 +146,10 @@ document.getElementById("harvest-btn")?.addEventListener("click", () => {
   document.getElementById("harvest-address")
     .textContent = address;
 
-});
 
+  await checkHarvestStatus();
+
+});
 
 // ============================
 // ハーベスト画面 戻る
