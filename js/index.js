@@ -1,5 +1,3 @@
-// index.js
-
 import { appState } from "./config.js";
 
 console.log("index.js loaded");
@@ -20,21 +18,16 @@ import { showPopup } from "./utils.js";
 window.addEventListener("load", async () => {
 
 
-
   // SSS初期化待ち
-
   await new Promise(resolve =>
     setTimeout(resolve,1000)
   );
 
 
 
-
-
   // SSS接続
 
   await autoConnectSSS();
-
 
 
 
@@ -64,8 +57,7 @@ window.addEventListener("load", async () => {
 
 
 
-
-  // アカウント取得
+  // アカウント情報取得
 
   await refreshAccount();
 
@@ -74,13 +66,9 @@ window.addEventListener("load", async () => {
 
 
 
-
-
-  /*
-  =================================
-  ページ取得
-  =================================
-  */
+  // ============================
+  // ページ取得
+  // ============================
 
 
   const accountPage =
@@ -101,22 +89,10 @@ window.addEventListener("load", async () => {
     );
 
 
-
-
-
-  /*
-  =================================
-  初期表示
-  =================================
-  */
-
-
-  if(sendPage)
-    sendPage.style.display="none";
-
-
-  if(transferPage)
-    transferPage.style.display="none";
+  const receivePage =
+    document.getElementById(
+      "receive-page"
+    );
 
 
 
@@ -124,15 +100,38 @@ window.addEventListener("load", async () => {
 
 
 
+  // ============================
+  // ページ切替関数
+  // ============================
+
+
+  function showPage(page){
+
+
+    document
+    .querySelectorAll(".page")
+    .forEach(
+      p=>{
+        p.classList.remove("active");
+      }
+    );
+
+
+    page.classList.add("active");
+
+
+  }
 
 
 
-  /*
-  =================================
-  送金ボタン
-  account → send
-  =================================
-  */
+
+
+
+
+  // ============================
+  // 送金ボタン
+  // account → mosaic選択
+  // ============================
 
 
   document
@@ -142,10 +141,7 @@ window.addEventListener("load", async () => {
     ()=>{
 
 
-      accountPage.style.display="none";
-
-
-      sendPage.style.display="block";
+      showPage(sendPage);
 
 
 
@@ -162,7 +158,7 @@ window.addEventListener("load", async () => {
 
 
 
-      // 保有モザイクコピー
+      // 保有モザイクをコピー
 
       sendList.innerHTML =
         mosaicList.innerHTML;
@@ -171,91 +167,96 @@ window.addEventListener("load", async () => {
 
 
 
-      /*
-      モザイククリック
-      send → transfer
-      */
 
+      // モザイク選択
 
       sendList
       .querySelectorAll(
         ".mosaic-item"
       )
-      .forEach(item=>{
+      .forEach(
+        item=>{
 
 
-        item.addEventListener(
-          "click",
-          ()=>{
+          item.addEventListener(
+            "click",
+            ()=>{
 
 
-            const name =
-              item.querySelector(
-                ".mosaic-name"
+              const name =
+                item
+                .querySelector(
+                  ".mosaic-name"
+                )
+                ?.textContent;
+
+
+
+              const id =
+                item
+                .querySelector(
+                  ".mosaic-id"
+                )
+                ?.textContent;
+
+
+
+              const amount =
+                item
+                .querySelector(
+                  ".mosaic-amount"
+                )
+                ?.textContent;
+
+
+
+
+
+
+              document
+              .getElementById(
+                "selected-mosaic-name"
               )
-              ?.textContent;
+              .textContent =
+                name;
 
 
-            const id =
-              item.querySelector(
-                ".mosaic-id"
+
+              document
+              .getElementById(
+                "selected-mosaic-id"
               )
-              ?.textContent;
+              .value =
+                id;
 
 
-            const amount =
-              item.querySelector(
-                ".mosaic-amount"
+
+              document
+              .getElementById(
+                "selected-mosaic-balance"
               )
-              ?.textContent;
+              .textContent =
+                amount;
 
 
 
 
 
-            document
-            .getElementById(
-              "selected-mosaic-name"
-            )
-            .textContent =
-              name;
+              // mosaic選択
+              // → 送金画面
+
+              showPage(
+                transferPage
+              );
 
 
 
-            document
-            .getElementById(
-              "selected-mosaic-id"
-            )
-            .value =
-              id;
+            }
+          );
 
 
-
-            document
-            .getElementById(
-              "selected-mosaic-balance"
-            )
-            .textContent =
-              amount;
-
-
-
-
-
-
-
-            sendPage.style.display="none";
-
-
-            transferPage.style.display="block";
-
-
-
-          }
-        );
-
-
-      });
+        }
+      );
 
 
 
@@ -270,12 +271,10 @@ window.addEventListener("load", async () => {
 
 
 
-  /*
-  =================================
-  戻る
-  send → account
-  =================================
-  */
+  // ============================
+  // 戻る
+  // mosaic → account
+  // ============================
 
 
   document
@@ -287,10 +286,9 @@ window.addEventListener("load", async () => {
     ()=>{
 
 
-      sendPage.style.display="none";
-
-
-      accountPage.style.display="block";
+      showPage(
+        accountPage
+      );
 
 
     }
@@ -302,13 +300,10 @@ window.addEventListener("load", async () => {
 
 
 
-
-  /*
-  =================================
-  戻る
-  transfer → send
-  =================================
-  */
+  // ============================
+  // 戻る
+  // transfer → mosaic
+  // ============================
 
 
   document
@@ -320,10 +315,9 @@ window.addEventListener("load", async () => {
     ()=>{
 
 
-      transferPage.style.display="none";
-
-
-      sendPage.style.display="block";
+      showPage(
+        sendPage
+      );
 
 
     }
@@ -337,11 +331,9 @@ window.addEventListener("load", async () => {
 
 
 
-  /*
-  =================================
-  送金実行
-  =================================
-  */
+  // ============================
+  // 送金実行
+  // ============================
 
 
   document
@@ -361,12 +353,9 @@ window.addEventListener("load", async () => {
 
 
 
-
-  /*
-  =================================
-  受け取り
-  =================================
-  */
+  // ============================
+  // 受取画面
+  // ============================
 
 
   document
@@ -378,14 +367,9 @@ window.addEventListener("load", async () => {
     ()=>{
 
 
-      accountPage.style.display="none";
-
-
-      document
-      .getElementById(
-        "receive-page"
-      )
-      .style.display="block";
+      showPage(
+        receivePage
+      );
 
 
     }
@@ -398,12 +382,9 @@ window.addEventListener("load", async () => {
 
 
 
-
-  /*
-  =================================
-  コピー
-  =================================
-  */
+  // ============================
+  // アドレスコピー
+  // ============================
 
 
   document
@@ -448,11 +429,9 @@ window.addEventListener("load", async () => {
 
 
 
-  /*
-  =================================
-  TX読み込み
-  =================================
-  */
+  // ============================
+  // TX読み込み
+  // ============================
 
 
   await loadRecentTx();
@@ -460,13 +439,20 @@ window.addEventListener("load", async () => {
 
 
   initWebSocket(
-    appState.currentAddress.toString()
+    appState.currentAddress
+    .toString()
   );
+
 
 
   initLiveTx(
-    appState.currentAddress.toString()
+    appState.currentAddress
+    .toString()
   );
+
+
+
+});
 
 
 
