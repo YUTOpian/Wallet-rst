@@ -681,3 +681,43 @@ body {
 
 }
 
+/* ==========================================
+   タブ
+========================================== */
+
+.wallet-tabs {
+  display: flex;
+  margin-top: 16px;
+  border-bottom: 1px solid #444;
+}
+
+.wallet-tab {
+  flex: 1;
+  padding: 12px;
+  background: transparent;
+  color: #999;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.wallet-tab:hover {
+  color: #fff;
+}
+
+.wallet-tab.active {
+  color: #00d4ff;
+  border-bottom: 3px solid #00d4ff;
+  font-weight: bold;
+}
+
+.wallet-panel {
+  display: none;
+  padding-top: 15px;
+}
+
+.wallet-panel.active {
+  display: block;
+}
