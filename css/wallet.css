@@ -51,6 +51,66 @@ body {
 }
 
 /* ============================================================
+   ウォレット操作ボタン
+============================================================ */
+
+.wallet-actions {
+
+  display:flex;
+
+  gap:12px;
+
+  margin-top:20px;
+
+  margin-bottom:20px;
+
+}
+
+
+.wallet-action-btn {
+
+  flex:1;
+
+  padding:14px;
+
+  border:none;
+
+  border-radius:12px;
+
+  color:white;
+
+  font-size:16px;
+
+  font-weight:bold;
+
+  cursor:pointer;
+
+}
+
+
+.send-btn {
+
+  background:#4f46e5;
+
+}
+
+
+.receive-btn {
+
+  background:#059669;
+
+}
+
+
+.wallet-action-btn:hover {
+
+  opacity:0.85;
+
+}
+
+
+
+/* ============================================================
    ポップアップ通知（右上固定）
 ============================================================ */
 .popup-card {
@@ -502,53 +562,6 @@ body {
   background: #1e293b;
   color: white;
   border-radius: 16px;
-}
-
-
-/* タイトル */
-#transfer-dialog h2 {
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-
-/* 送信モザイク名 */
-#selected-mosaic-name {
-  color: #60a5fa;
-  font-weight: bold;
-}
-
-
-/* 保有数量 */
-#selected-mosaic-balance {
-  color: #4ade80;
-  font-weight: bold;
-}
-
-
-/* 閉じるボタン */
-#close-transfer-dialog {
-  background: transparent;
-  color: white;
-  border: none;
-  font-size: 22px;
-  cursor: pointer;
-}
-
-
-/* 入力欄 */
-#transfer-dialog .input-box {
-  background: #111827;
-  color: white;
-}
-
-
-/* プレースホルダー */
-#transfer-dialog input::placeholder,
-#transfer-dialog textarea::placeholder {
-  color: #94a3b8;
 }
 
 
