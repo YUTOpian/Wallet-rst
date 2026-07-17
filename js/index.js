@@ -77,7 +77,14 @@ window.addEventListener("load", async () => {
       sendTx
     );
 
+document.getElementById("close-transfer-dialog")
+  ?.addEventListener("click", () => {
 
+    document
+      .getElementById("transfer-dialog")
+      .close();
+
+  });
 
   document.getElementById("reload-tx")
     ?.addEventListener(
