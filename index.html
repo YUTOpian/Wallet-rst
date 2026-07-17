@@ -34,7 +34,6 @@
 <div class="container">
 
 
-
     <!-- ▼ アカウント情報 -->
 
     <div class="card">
@@ -64,13 +63,11 @@
                 🗒️
             </button>
 
-
         </div>
 
 
 
         <p>
-
             <b>残高：</b>
 
             <span id="account-balance">
@@ -78,6 +75,31 @@
             </span>
 
         </p>
+
+
+
+        <!-- ▼ 追加：送金・受け取りボタン -->
+
+        <div class="wallet-actions">
+
+            <button
+                id="open-send"
+                class="button-primary">
+
+                送金
+
+            </button>
+
+
+            <button
+                id="open-receive"
+                class="button-primary">
+
+                受け取り
+
+            </button>
+
+        </div>
 
 
 
@@ -105,13 +127,12 @@
 
 
 
-    <!-- ▼ 送金ポップアップ -->
+    <!-- ▼ 送金ポップアップ（既存のまま） -->
 
     <dialog id="transfer-dialog">
 
 
         <div id="transfer-card">
-
 
 
             <h2>
@@ -128,8 +149,6 @@
 
 
             </h2>
-
-
 
 
 
@@ -151,8 +170,6 @@
 
 
 
-
-
             <p>
 
                 <b>
@@ -171,100 +188,110 @@
 
 
 
-
-
-            <!-- 選択されたモザイクID -->
-
             <input
                 type="hidden"
                 id="selected-mosaic-id" />
 
 
 
-
-
-
-
             <input
-
                 id="tx-recipient"
-
                 class="input-box"
-
                 placeholder="宛先アドレス" />
 
 
 
-
-
-
             <input
-
                 id="tx-amount"
-
                 class="input-box"
-
                 type="number"
-
                 min="0"
-
                 step="any"
-
                 placeholder="数量" />
 
 
 
-
-
-
-
             <textarea
-
                 id="tx-message"
-
                 class="input-box"
-
                 placeholder="メッセージ（任意）"></textarea>
 
 
 
-
-
-
-
             <button
-
                 id="btn-transfer"
-
                 class="button-primary">
 
-
                 送金する
-
 
             </button>
 
 
 
-
-
-
-
             <div
-
                 id="tx-status"
-
                 class="status-text">
 
+            </div>
+
+
+        </div>
+
+
+    </dialog>
+
+
+
+
+
+    <!-- ▼ 受け取りQRポップアップ -->
+
+    <dialog id="receive-dialog">
+
+
+        <div id="receive-card">
+
+
+            <h2>
+
+                受け取り
+
+
+                <button
+                    id="close-receive-dialog">
+
+                    ✕
+
+                </button>
+
+            </h2>
+
+
+
+            <div id="receive-qrcode">
 
             </div>
 
 
 
+            <p
+                id="receive-address"
+                class="address-text">
+
+            </p>
+
+
+
+            <button
+                id="copy-receive-address"
+                class="button-primary">
+
+                アドレスをコピー
+
+            </button>
 
 
         </div>
-
 
 
     </dialog>
@@ -284,9 +311,7 @@
 
 
         <h2>
-
             最近のトランザクション
-
         </h2>
 
 
@@ -310,9 +335,7 @@
 
 
 <script
-
     type="module"
-
     src="js/index.js">
 
 </script>
@@ -322,4 +345,3 @@
 </body>
 
 </html>
-
