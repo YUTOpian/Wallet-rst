@@ -38,8 +38,30 @@
           <button id="harvest-btn" class="button-primary">ハーベスト</button>
         </div>
         <hr>
-        <h3>保有トークン</h3>
-        <div id="mosaic-list">読み込み中...</div>
+
+<div class="wallet-tabs">
+
+  <div id="tab-token" class="wallet-tab active">
+    保有トークン
+  </div>
+
+  <div id="tab-activity" class="wallet-tab">
+    アクティビティ
+  </div>
+
+</div>
+
+<div id="token-content">
+  <div id="mosaic-list">
+    読み込み中...
+  </div>
+</div>
+
+<div id="activity-content" style="display:none;">
+  <div id="tx-list">
+    読み込み中…
+  </div>
+</div>
       </div>
     </div>
 
@@ -147,16 +169,4 @@
 
 </div>
 
-    <!-- ============================================================
-       最近の取引（アクティビティ）
-    ============================================================ -->
-    <div class="card">
-      <h2>アクティビティ</h2>
-      <div id="tx-list">読み込み中…</div>
-    </div>
 
-  </div>
-
-  <script type="module" src="js/index.js"></script>
-</body>
-</html>
