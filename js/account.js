@@ -50,9 +50,39 @@ export async function refreshAccount() {
     const address = appState.currentAddress.toString();
     document.getElementById("account-address").textContent = address;
 
-    const res = await fetch(new URL(`/accounts/${address}`, appState.NODE));
-    const data = await res.json();
-    const mosaics = data.account.mosaics || [];
+const res = await fetch(new URL(`/accounts/${address}`, appState.NODE));
+
+//
+// まだ一度もチェーンに登場していないアカウント
+//
+if (res.status === 404) {
+
+  console.log("新規アカウント");
+
+  appState.mosaicInfo = {};
+
+  document.getElementById("account-balance").textContent =
+    "0.000 XYM";
+
+  const mosaicList =
+    document.getElementById("mosaic-list");
+
+  if (mosaicList) {
+    mosaicList.innerHTML =
+      "<div>保有トークンはありません</div>";
+  }
+
+  setStatus(
+    "account-status",
+    "新規アカウントです",
+    "success"
+  );
+
+  return;
+}
+
+const data = await res.json();
+const mosaics = data.account.mosaics || [];
 
     /*
       モザイクネームスペース取得
