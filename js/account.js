@@ -290,7 +290,7 @@ if (mosaicList) {
     document.getElementById("selected-mosaic-id").value = idHex;
     document.getElementById("selected-mosaic-name").textContent = name;
     document.getElementById("selected-mosaic-balance").textContent =
-      `${(amount / (10 ** divisibility)).toLocaleString()} ${name}`;
+  `${(amount / (10 ** divisibility)).toLocaleString()}`;
 
     // 送金フォームへスクロール
     document.getElementById("transfer-card").scrollIntoView({
