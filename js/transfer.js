@@ -15,11 +15,12 @@ export async function sendTx() {
     return;
   }
 
-  const recipientRaw = document.getElementById("tx-recipient").value.trim();
-  const amountStr = document.getElementById("tx-amount").value;
-  const messageText = document.getElementById("tx-message").value || "";
-  const mosaicSelect = document.getElementById("tx-mosaic");
-  const selectedMosaicId = mosaicSelect.value;
+const recipientRaw = document.getElementById("tx-recipient").value.trim();
+const amountStr = document.getElementById("tx-amount").value;
+const messageText = document.getElementById("tx-message").value || "";
+
+const selectedMosaicId =
+  document.getElementById("selected-mosaic-id").value;
 
   // ▼ 修正：amountStr === "" のときだけ弾く（0 は許可）
   if (!recipientRaw || amountStr === "") {
