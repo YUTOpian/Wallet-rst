@@ -2,13 +2,16 @@
 <html lang="ja">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Symbol Simple Wallet</title>
+<meta charset="UTF-8" />
 
-    <link rel="stylesheet" href="css/base.css" />
-    <link rel="stylesheet" href="css/wallet.css" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Symbol Simple Wallet</title>
+
+<link rel="stylesheet" href="css/base.css" />
+<link rel="stylesheet" href="css/wallet.css" />
+
 </head>
 
 
@@ -17,352 +20,457 @@
 
 <header>
 
-    <h2>
-        Symbol Simple Wallet
-    </h2>
+<h2>
+Symbol Simple Wallet
+</h2>
 
-    <div class="header-info">
-        <p>
-            <span id="node-info">---</span>
-        </p>
-    </div>
+
+<div class="header-info">
+
+<p>
+<span id="node-info">---</span>
+</p>
+
+</div>
 
 </header>
+
+
 
 
 
 <div class="container">
 
 
-    <!-- ▼ アカウント情報 -->
 
-    <div class="card">
-
-        <h2>
-            アカウント情報
-        </h2>
+<!-- ==========================
+     アカウント画面
+========================== -->
 
 
-        <p>
-            <b>アドレス：</b>
-        </p>
-
-
-        <div class="address-row">
-
-            <span
-                id="account-address"
-                class="address-text">
-                ---
-            </span>
-
-
-            <button
-                id="copy-address-btn"
-                class="copy-btn">
-                🗒️
-            </button>
-
-        </div>
+<div id="account-page">
 
 
 
-        <p>
-            <b>残高：</b>
+<div class="card">
 
-            <span id="account-balance">
-                ---
-            </span>
 
-        </p>
+<h2>
+アカウント情報
+</h2>
 
 
 
-        <!-- ▼ 追加：送金・受け取りボタン -->
+<p>
+<b>アドレス：</b>
+</p>
 
-        <div class="wallet-actions">
 
-            <button
-    id="send-btn"
-    class="button-primary">
 
-    送金
+<div class="address-row">
+
+
+<span
+id="account-address"
+class="address-text">
+
+---
+
+</span>
+
+
+
+<button
+id="copy-address-btn"
+class="copy-btn">
+
+🗒️
 
 </button>
-
-
-            <button
-    id="receive-btn"
-    class="button-primary">
-
-    受け取り
-
-</button>
-
-        </div>
-
-
-
-        <hr>
-
-
-
-        <h3>
-            保有モザイク
-        </h3>
-
-
-
-        <div id="mosaic-list">
-
-            読み込み中...
-
-        </div>
-<!-- ▼ 送金モザイク選択スライド -->
-
-<div id="send-panel">
-
-
-    <div class="send-header">
-
-
-        <button
-            id="close-send-panel">
-
-            ←
-
-        </button>
-
-
-        <h2>
-            送金
-        </h2>
-
-
-    </div>
-
-
-
-    <p class="send-guide">
-
-        送りたいモザイクを選択してください
-
-    </p>
-
-
-
-    <div id="send-mosaic-list">
-
-
-    </div>
 
 
 </div>
 
-    </div>
 
 
 
 
+<p>
 
+<b>残高：</b>
 
-    <!-- ▼ 送金ポップアップ（既存のまま） -->
+<span id="account-balance">
+---
+</span>
 
-    <dialog id="transfer-dialog">
 
+</p>
 
-        <div id="transfer-card">
 
 
-            <h2>
 
-                モザイク送金
 
 
-                <button
-                    id="close-transfer-dialog">
+<div class="wallet-actions">
 
-                    ✕
 
-                </button>
+<button
+id="send-btn"
+class="button-primary">
 
+送金
 
-            </h2>
+</button>
 
 
 
-            <p>
 
-                <b>
-                    送信モザイク：
-                </b>
+<button
+id="receive-btn"
+class="button-primary">
 
+受け取り
 
-                <span id="selected-mosaic-name">
+</button>
 
-                    未選択
 
-                </span>
 
+</div>
 
-            </p>
 
 
 
-            <p>
 
-                <b>
-                    保有数量：
-                </b>
+<hr>
 
 
-                <span id="selected-mosaic-balance">
 
-                    ---
+<h3>
+保有モザイク
+</h3>
 
-                </span>
 
 
-            </p>
+<div id="mosaic-list">
 
+読み込み中...
 
+</div>
 
-            <input
-                type="hidden"
-                id="selected-mosaic-id" />
 
 
+</div>
 
-            <input
-                id="tx-recipient"
-                class="input-box"
-                placeholder="宛先アドレス" />
 
+</div>
 
 
-            <input
-                id="tx-amount"
-                class="input-box"
-                type="number"
-                min="0"
-                step="any"
-                placeholder="数量" />
 
 
 
-            <textarea
-                id="tx-message"
-                class="input-box"
-                placeholder="メッセージ（任意）"></textarea>
 
 
 
-            <button
-                id="btn-transfer"
-                class="button-primary">
 
-                送金する
+<!-- ==========================
+     モザイク選択画面
+========================== -->
 
-            </button>
 
+<div id="send-page" class="page">
 
 
-            <div
-                id="tx-status"
-                class="status-text">
+<div class="send-header">
 
-            </div>
 
+<button
+id="back-account">
 
-        </div>
+←
 
+</button>
 
-    </dialog>
 
 
+<h2>
+送金
+</h2>
 
 
 
-    <!-- ▼ 受け取りQRポップアップ -->
+</div>
 
-    <dialog id="receive-dialog">
 
 
-        <div id="receive-card">
 
 
-            <h2>
+<p>
 
-                受け取り
+送りたいモザイクを選択してください
 
+</p>
 
-                <button
-                    id="close-receive-dialog">
 
-                    ✕
 
-                </button>
 
-            </h2>
 
+<div id="send-mosaic-list">
 
 
-            <div id="receive-qrcode">
+</div>
 
-            </div>
 
 
+</div>
 
-            <p
-                id="receive-address"
-                class="address-text">
 
-            </p>
 
 
 
-            <button
-                id="copy-receive-address"
-                class="button-primary">
 
-                アドレスをコピー
 
-            </button>
 
 
-        </div>
+<!-- ==========================
+     送金入力画面
+========================== -->
 
 
-    </dialog>
+<div id="transfer-page" class="page">
 
 
 
+<h2>
 
+モザイク送金
 
+</h2>
 
 
 
 
-    <!-- ▼ 最近のトランザクション -->
 
+<p>
 
-    <div class="card">
+<b>
+送信モザイク：
+</b>
 
 
-        <h2>
-            最近のトランザクション
-        </h2>
+<span id="selected-mosaic-name">
 
+未選択
 
+</span>
 
-        <div id="tx-list">
 
-            読み込み中…
+</p>
 
-        </div>
 
 
-    </div>
+
+
+<p>
+
+<b>
+保有数量：
+</b>
+
+
+<span id="selected-mosaic-balance">
+
+---
+
+</span>
+
+
+</p>
+
+
+
+
+
+
+<input
+type="hidden"
+id="selected-mosaic-id">
+
+
+
+
+
+<input
+
+id="tx-recipient"
+
+class="input-box"
+
+placeholder="宛先アドレス">
+
+
+</input>
+
+
+
+
+
+<input
+
+id="tx-amount"
+
+class="input-box"
+
+type="number"
+
+placeholder="数量">
+
+
+</input>
+
+
+
+
+
+
+<textarea
+
+id="tx-message"
+
+class="input-box"
+
+placeholder="メッセージ（任意）">
+
+</textarea>
+
+
+
+
+
+
+
+<button
+
+id="btn-transfer"
+
+class="button-primary">
+
+送金する
+
+</button>
+
+
+
+
+
+<button
+
+id="back-send"
+
+class="button-primary">
+
+戻る
+
+</button>
+
+
+
+
+
+
+<div id="tx-status">
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- ==========================
+     受取画面
+========================== -->
+
+
+<div id="receive-page" class="page">
+
+
+<h2>
+
+受け取り
+
+</h2>
+
+
+
+<div id="receive-qrcode">
+
+</div>
+
+
+
+<p
+id="receive-address"
+class="address-text">
+
+</p>
+
+
+
+<button
+
+id="copy-receive-address"
+
+class="button-primary">
+
+アドレスをコピー
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- ==========================
+     最近の取引
+========================== -->
+
+
+<div class="card">
+
+
+<h2>
+
+最近のトランザクション
+
+</h2>
+
+
+
+<div id="tx-list">
+
+読み込み中…
+
+</div>
+
+
+</div>
+
+
 
 
 
@@ -374,13 +482,16 @@
 
 
 <script
-    type="module"
-    src="js/index.js">
+
+type="module"
+
+src="js/index.js">
 
 </script>
 
 
 
 </body>
+
 
 </html>
