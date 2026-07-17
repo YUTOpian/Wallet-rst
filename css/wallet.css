@@ -662,3 +662,45 @@ body {
   gap:12px;
 
 }
+
+/* ==========================
+   ページ切替
+========================== */
+
+.page {
+
+    display:none;
+
+    animation: slideIn 0.25s ease;
+
+}
+
+
+.page.active {
+
+    display:block;
+
+}
+
+
+
+@keyframes slideIn {
+
+    from {
+
+        transform:translateX(30px);
+
+        opacity:0;
+
+    }
+
+
+    to {
+
+        transform:translateX(0);
+
+        opacity:1;
+
+    }
+
+}
