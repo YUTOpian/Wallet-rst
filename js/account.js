@@ -326,7 +326,12 @@ item.onclick = () => {
 
 // モザイク一覧へ追加
 mosaicList.appendChild(item);
-} 
+
+
+} // ← if (mosaicList) 終了
+
+
+} // ← for (const mosaic of mosaics) 終了
 
     const xymId =
       appState.networkType === 152
