@@ -326,7 +326,7 @@ item.onclick = () => {
 
 // モザイク一覧へ追加
 mosaicList.appendChild(item);
-
+} 
 
     const xymId =
       appState.networkType === 152
