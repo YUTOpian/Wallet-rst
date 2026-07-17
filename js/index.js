@@ -4,6 +4,7 @@ import { appState } from "./config.js";
 
 console.log("index.js loaded");
 
+
 import { autoConnectSSS } from "./sss.js";
 import { refreshAccount } from "./account.js";
 import { sendTx } from "./transfer.js";
@@ -14,68 +15,57 @@ import { showPopup } from "./utils.js";
 
 
 
-function checkSSSConnection() {
-
-  if (!window.SSS || !window.SSS.activePublicKey) {
-
-    showPopup(
-      "SSS Extension とリンクしてください（アカウントを選択）",
-      true
-    );
-
-  }
-
-}
-
-
 
 
 window.addEventListener("load", async () => {
 
 
 
-  // SSS Extension 初期化待ち
+  // SSS初期化待ち
 
-  await new Promise(resolve => 
-    setTimeout(resolve, 1000)
+  await new Promise(resolve =>
+    setTimeout(resolve,1000)
   );
 
 
 
-  // ① SSS接続
+
+
+  // SSS接続
 
   await autoConnectSSS();
 
 
 
 
-  // ② SSS確認
 
-  if (!window.SSS || !window.SSS.activePublicKey) {
-
+  if(
+    !window.SSS ||
+    !window.SSS.activePublicKey
+  ){
 
     showPopup(
-      "⚠️ SSS Extension とリンクしてください 🔗<br>Symbol アカウントを選択する必要があります。",
+      "⚠️ SSS Extension とリンクしてください",
       true
     );
 
-
     return;
-
 
   }
 
 
 
 
-  // ③ SDK初期化
+
+  // SDK初期化
 
   await initSdk();
 
 
 
 
-  // アカウント情報取得
+
+  // アカウント取得
 
   await refreshAccount();
 
@@ -84,344 +74,193 @@ window.addEventListener("load", async () => {
 
 
 
-  // ================================
-  // イベント登録
-  // ================================
 
 
+  /*
+  =================================
+  ページ取得
+  =================================
+  */
 
 
-  // 更新ボタン
+  const accountPage =
+    document.getElementById(
+      "account-page"
+    );
 
-  document
-    .getElementById("refresh-account")
-    ?.addEventListener(
-      "click",
-      refreshAccount
+
+  const sendPage =
+    document.getElementById(
+      "send-page"
+    );
+
+
+  const transferPage =
+    document.getElementById(
+      "transfer-page"
     );
 
 
 
 
 
-  // 送金実行
+  /*
+  =================================
+  初期表示
+  =================================
+  */
+
+
+  if(sendPage)
+    sendPage.style.display="none";
+
+
+  if(transferPage)
+    transferPage.style.display="none";
+
+
+
+
+
+
+
+
+
+
+  /*
+  =================================
+  送金ボタン
+  account → send
+  =================================
+  */
+
 
   document
-    .getElementById("btn-transfer")
-    ?.addEventListener(
-      "click",
-      sendTx
-    );
+  .getElementById("send-btn")
+  ?.addEventListener(
+    "click",
+    ()=>{
+
+
+      accountPage.style.display="none";
+
+
+      sendPage.style.display="block";
+
+
+
+      const sendList =
+        document.getElementById(
+          "send-mosaic-list"
+        );
+
+
+      const mosaicList =
+        document.getElementById(
+          "mosaic-list"
+        );
+
+
+
+      // 保有モザイクコピー
+
+      sendList.innerHTML =
+        mosaicList.innerHTML;
 
 
 
 
 
+      /*
+      モザイククリック
+      send → transfer
+      */
 
 
-  // =================================
-  // 送金ボタン
-  // 横スライド表示
-  // =================================
+      sendList
+      .querySelectorAll(
+        ".mosaic-item"
+      )
+      .forEach(item=>{
 
 
-  document
-    .getElementById("send-btn")
-    ?.addEventListener(
-      "click",
-      () => {
+        item.addEventListener(
+          "click",
+          ()=>{
 
 
-        const panel =
-          document.getElementById(
-            "send-panel"
-          );
+            const name =
+              item.querySelector(
+                ".mosaic-name"
+              )
+              ?.textContent;
 
 
-        const sendList =
-          document.getElementById(
-            "send-mosaic-list"
-          );
+            const id =
+              item.querySelector(
+                ".mosaic-id"
+              )
+              ?.textContent;
 
 
-        const mosaicList =
-          document.getElementById(
-            "mosaic-list"
-          );
-
-
-
-        if(
-          panel &&
-          sendList &&
-          mosaicList
-        ){
-
-
-          console.log(
-  "send panel",
-  panel
-);
-
-console.log(
-  "send list",
-  sendList
-);
-
-console.log(
-  "mosaic list",
-  mosaicList
-);
-
-          // 保有モザイク一覧コピー
-
-          sendList.innerHTML =
-            mosaicList.innerHTML;
+            const amount =
+              item.querySelector(
+                ".mosaic-amount"
+              )
+              ?.textContent;
 
 
 
-          // コピーしたモザイクにクリック処理追加
 
-          sendList
-            .querySelectorAll(
-              ".mosaic-item"
+
+            document
+            .getElementById(
+              "selected-mosaic-name"
             )
-            .forEach(
-              item => {
+            .textContent =
+              name;
 
 
-                item.addEventListener(
-                  "click",
-                  () => {
 
+            document
+            .getElementById(
+              "selected-mosaic-id"
+            )
+            .value =
+              id;
 
-                    const id =
-                      item
-                      .querySelector(
-                        ".mosaic-id"
-                      )
-                      ?.textContent;
 
 
+            document
+            .getElementById(
+              "selected-mosaic-balance"
+            )
+            .textContent =
+              amount;
 
-                    console.log(
-                      "送信モザイク選択:",
-                      id
-                    );
 
 
 
-                    // 元の一覧をクリック
 
-                    const original =
-                      [
-                        ...document
-                        .querySelectorAll(
-                          "#mosaic-list .mosaic-item"
-                        )
-                      ]
-                      .find(
-                        el =>
-                        el
-                        .querySelector(
-                          ".mosaic-id"
-                        )
-                        ?.textContent === id
-                      );
 
 
+            sendPage.style.display="none";
 
-                    if(original){
 
-                      original.click();
+            transferPage.style.display="block";
 
-                    }
-
-
-
-                    // スライドを閉じる
-
-                    panel
-                    .classList
-                    .remove(
-                      "active"
-                    );
-
-
-                  }
-                );
-
-
-              }
-            );
-
-
-
-          // 表示
-
-          panel
-          .classList
-          .add(
-            "active"
-          );
-
-
-        }
-
-
-      }
-    );
-
-
-
-
-
-
-
-
-
-  // =================================
-  // 送金スライド閉じる
-  // =================================
-
-
-  document
-    .getElementById(
-      "close-send-panel"
-    )
-    ?.addEventListener(
-      "click",
-      () => {
-
-
-        document
-        .getElementById(
-          "send-panel"
-        )
-        ?.classList
-        .remove(
-          "active"
-        );
-
-
-      }
-    );
-
-
-
-
-
-
-
-
-
-  // =================================
-  // 送金ポップアップ閉じる
-  // =================================
-
-
-  document
-    .getElementById(
-      "close-transfer-dialog"
-    )
-    ?.addEventListener(
-      "click",
-      () => {
-
-
-        document
-        .getElementById(
-          "transfer-dialog"
-        )
-        .close();
-
-
-      }
-    );
-
-
-
-
-
-
-
-
-  // =================================
-  // トランザクション再読み込み
-  // =================================
-
-
-  document
-    .getElementById(
-      "reload-tx"
-    )
-    ?.addEventListener(
-      "click",
-      loadRecentTx
-    );
-
-
-
-
-
-
-
-
-  // =================================
-  // アドレスコピー
-  // =================================
-
-
-  document
-    .getElementById(
-      "copy-address-btn"
-    )
-    ?.addEventListener(
-      "click",
-      () => {
-
-
-        const addr =
-          document
-          .getElementById(
-            "account-address"
-          )
-          .textContent;
-
-
-
-        navigator.clipboard
-        .writeText(addr)
-
-        .then(
-          () => {
-
-
-            showPopup(
-              "アドレスをコピーしました"
-            );
-
-
-          }
-        )
-
-
-        .catch(
-          () => {
-
-
-            showPopup(
-              "コピーに失敗しました",
-              true
-            );
 
 
           }
         );
 
 
-      }
-    );
+      });
+
+
+
+    }
+  );
 
 
 
@@ -430,35 +269,204 @@ console.log(
 
 
 
-  // =================================
-  // 接続後処理
-  // =================================
+
+  /*
+  =================================
+  戻る
+  send → account
+  =================================
+  */
 
 
-  if(window.SSS?.activePublicKey){
+  document
+  .getElementById(
+    "back-account"
+  )
+  ?.addEventListener(
+    "click",
+    ()=>{
+
+
+      sendPage.style.display="none";
+
+
+      accountPage.style.display="block";
+
+
+    }
+  );
 
 
 
-    await loadRecentTx();
 
 
 
 
-    initWebSocket(
-      appState.currentAddress
-      .toString()
-    );
+
+  /*
+  =================================
+  戻る
+  transfer → send
+  =================================
+  */
+
+
+  document
+  .getElementById(
+    "back-send"
+  )
+  ?.addEventListener(
+    "click",
+    ()=>{
+
+
+      transferPage.style.display="none";
+
+
+      sendPage.style.display="block";
+
+
+    }
+  );
 
 
 
 
-    initLiveTx(
-      appState.currentAddress
-      .toString()
-    );
 
 
-  }
+
+
+
+  /*
+  =================================
+  送金実行
+  =================================
+  */
+
+
+  document
+  .getElementById(
+    "btn-transfer"
+  )
+  ?.addEventListener(
+    "click",
+    sendTx
+  );
+
+
+
+
+
+
+
+
+
+
+  /*
+  =================================
+  受け取り
+  =================================
+  */
+
+
+  document
+  .getElementById(
+    "receive-btn"
+  )
+  ?.addEventListener(
+    "click",
+    ()=>{
+
+
+      accountPage.style.display="none";
+
+
+      document
+      .getElementById(
+        "receive-page"
+      )
+      .style.display="block";
+
+
+    }
+  );
+
+
+
+
+
+
+
+
+
+  /*
+  =================================
+  コピー
+  =================================
+  */
+
+
+  document
+  .getElementById(
+    "copy-address-btn"
+  )
+  ?.addEventListener(
+    "click",
+    ()=>{
+
+
+      const addr =
+        document
+        .getElementById(
+          "account-address"
+        )
+        .textContent;
+
+
+
+      navigator.clipboard
+      .writeText(addr)
+      .then(()=>{
+
+
+        showPopup(
+          "アドレスをコピーしました"
+        );
+
+
+      });
+
+
+    }
+  );
+
+
+
+
+
+
+
+
+
+  /*
+  =================================
+  TX読み込み
+  =================================
+  */
+
+
+  await loadRecentTx();
+
+
+
+  initWebSocket(
+    appState.currentAddress.toString()
+  );
+
+
+  initLiveTx(
+    appState.currentAddress.toString()
+  );
 
 
 
