@@ -32,6 +32,7 @@ window.addEventListener("load", async () => {
   const sendPage = document.getElementById("send-page");
   const transferPage = document.getElementById("transfer-page");
   const receivePage = document.getElementById("receive-page");
+  const harvestPage = document.getElementById("harvest-page");
 
   // ============================
   // ページ切替共通関数
@@ -123,6 +124,37 @@ window.addEventListener("load", async () => {
       height: 200
     });
   });
+
+// ============================
+// ハーベスト画面表示
+// ============================
+document.getElementById("harvest-btn")?.addEventListener("click", () => {
+
+  console.log("ハーベスト画面へ");
+
+  showPage(harvestPage);
+
+
+  const address =
+    document.getElementById("account-address")
+      .textContent
+      .trim();
+
+
+  document.getElementById("harvest-address")
+    .textContent = address;
+
+});
+
+
+// ============================
+// ハーベスト画面 戻る
+// ============================
+document.getElementById("back-account-harvest")?.addEventListener("click", () => {
+
+  showPage(accountPage);
+
+});
 
   // ============================
   // アドレスコピー
