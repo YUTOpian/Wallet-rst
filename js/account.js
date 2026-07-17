@@ -103,11 +103,20 @@ export async function refreshAccount() {
     // APIリクエストの並列化用配列
     const fetchPromises = mosaics.map(async (mosaic) => {
       // IDのパース
-      const idHex = 
-  toBigInt(mosaic.id)
+let idHex;
+
+if (typeof mosaic.id === "string") {
+
+  idHex = mosaic.id.toUpperCase();
+
+} else {
+
+  idHex = toBigInt(mosaic.id)
     .toString(16)
     .toUpperCase()
     .padStart(16, "0");
+
+}
 
       // 保有量のパース（amountがobject構造の場合を考慮）
       const amount = Number(
@@ -117,7 +126,7 @@ export async function refreshAccount() {
       );
 
       let divisibility = 0;
-      let name = idHex;
+      let name = namespaceMap[idHex] ?? idHex;
 
       // XYMは固定で可分性6
       if (idHex === "6BED913FA20223F8" || idHex === "72C0212E67A08BCE") {
@@ -131,7 +140,7 @@ export async function refreshAccount() {
   );
 
 
-  if (!mosaicRes.ok) {
+ if (!mosaicRes.ok) {
 
     console.warn(
       "モザイク詳細取得不可:",
@@ -139,14 +148,15 @@ export async function refreshAccount() {
       mosaicRes.status
     );
 
+    // 詳細取得できないモザイクは仮に可分性0
     return {
       idHex,
       amount,
       divisibility: 0,
-      name
+      name: namespaceMap[idHex] ?? idHex
     };
 
-  }
+}
 
 
   const mosaicData =
