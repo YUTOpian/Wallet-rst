@@ -77,6 +77,27 @@ window.addEventListener("load", async () => {
       sendTx
     );
 
+  document.getElementById("send-btn")
+  ?.addEventListener(
+    "click",
+    () => {
+
+      const mosaicList =
+        document.getElementById("mosaic-list");
+
+
+      if(mosaicList){
+
+        mosaicList.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+
+      }
+
+    }
+  );
+
 document.getElementById("close-transfer-dialog")
   ?.addEventListener("click", () => {
 
