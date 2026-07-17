@@ -46,8 +46,7 @@ window.addEventListener("load", async () => {
   // 初期選択（最初のモザイク）
   const mosaicSelect = document.getElementById("tx-mosaic");
 
-  if (mosaicSelect && mosaicSelect.options.length > 0) {
-    mosaicSelect.dispatchEvent(new Event("change"));
+ 
   }
 
   // ========= イベント登録 =========
@@ -77,24 +76,7 @@ window.addEventListener("load", async () => {
 
     });
 
-  // プルダウン変更時
-  mosaicSelect?.addEventListener("change", () => {
-
-    const id = mosaicSelect.value;
-
-    const info = appState.mosaicInfo[id];
-
-    if (!info) return;
-
-    document.getElementById("selected-mosaic-id").value = id;
-
-    document.getElementById("selected-mosaic-name").textContent =
-      info.name;
-
-    document.getElementById("selected-mosaic-balance").textContent =
-      `${(info.amount / (10 ** info.divisibility)).toLocaleString()} ${info.name}`;
-
-  });
+  
 
   // ⑤ 接続済みなら各種情報を読み込む
   if (window.SSS?.activePublicKey) {
