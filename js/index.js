@@ -115,6 +115,37 @@ activityTab?.addEventListener("click", () => {
     showPage(transferPage);
   });
 
+// ============================
+// タブ切り替え
+// ============================
+
+const tabToken = document.getElementById("tab-token");
+const tabActivity = document.getElementById("tab-activity");
+
+const tokenContent = document.getElementById("token-content");
+const activityContent = document.getElementById("activity-content");
+
+tabToken?.addEventListener("click", () => {
+
+  tabToken.classList.add("active");
+  tabActivity.classList.remove("active");
+
+  tokenContent.style.display = "block";
+  activityContent.style.display = "none";
+
+});
+
+tabActivity?.addEventListener("click", () => {
+
+  tabActivity.classList.add("active");
+  tabToken.classList.remove("active");
+
+  tokenContent.style.display = "none";
+  activityContent.style.display = "block";
+
+});
+
+  
   // ============================
   // 画面遷移：戻るボタン各種
   // ============================
