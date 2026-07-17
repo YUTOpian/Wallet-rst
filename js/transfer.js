@@ -41,7 +41,27 @@ export async function sendTx() {
   const selectedMosaicId =
     document.getElementById("selected-mosaic-id").value;
 
+const selectedMosaicElement =
+  document.getElementById("selected-mosaic-id");
 
+
+console.log(
+  "selected mosaic element:",
+  selectedMosaicElement
+);
+
+
+const selectedMosaicId =
+  selectedMosaicElement?.value;
+  
+
+console.log(
+  "selected mosaic id:",
+  selectedMosaicId
+);
+
+
+  
 
   /*
     入力チェック
