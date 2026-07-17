@@ -13,8 +13,6 @@ import { showPopup } from "./utils.js";
 
 
 
-
-
 window.addEventListener("load", async () => {
 
 
@@ -47,21 +45,14 @@ window.addEventListener("load", async () => {
   }
 
 
-
-
-
   // SDK初期化
 
   await initSdk();
 
 
-
-
   // アカウント情報取得
 
   await refreshAccount();
-
-
 
 
 
@@ -96,10 +87,6 @@ window.addEventListener("load", async () => {
 
 
 
-
-
-
-
   // ============================
   // ページ切替関数
   // ============================
@@ -124,10 +111,6 @@ window.addEventListener("load", async () => {
 
 
 
-
-
-
-
   // ============================
   // 送金ボタン
   // account → mosaic選択
@@ -142,7 +125,6 @@ window.addEventListener("load", async () => {
 
 
       showPage(sendPage);
-
 
 
       const sendList =
@@ -163,10 +145,18 @@ window.addEventListener("load", async () => {
       sendList.innerHTML =
         mosaicList.innerHTML;
 
+console.log(
+  "送金一覧HTML:",
+  sendList.innerHTML
+);
 
 
+console.log(
+  "mosaic item数:",
+  sendList.querySelectorAll(".mosaic-item").length
+);
 
-
+      
 
       // モザイク選択
 
