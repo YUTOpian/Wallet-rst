@@ -4,16 +4,43 @@
 import { appState } from "./config.js";
 import { setStatus } from "./ui.js";
 
-// UInt64（lower, higherオブジェクト）をBigIntに安全に変換するヘルパー関数
 function toBigInt(uint64) {
+
   if (!uint64) return 0n;
+
+
+  // UInt64形式
   if (typeof uint64 === "object") {
-    // 符号なし32bitとして扱うため、>>> 0 を意識してBigInt化
-    const unsignedLower = BigInt(uint64.lower >>> 0);
-    const unsignedHigher = BigInt(uint64.higher >>> 0);
+
+    const unsignedLower =
+      BigInt(uint64.lower >>> 0);
+
+    const unsignedHigher =
+      BigInt(uint64.higher >>> 0);
+
     return (unsignedHigher << 32n) | unsignedLower;
+
   }
+
+
+  // 文字列の場合
+  if (typeof uint64 === "string") {
+
+    // 16進文字列
+    if (/^[0-9A-Fa-f]+$/.test(uint64)) {
+
+      return BigInt("0x" + uint64);
+
+    }
+
+    // 10進文字列
+    return BigInt(uint64);
+
+  }
+
+
   return BigInt(uint64);
+
 }
 
 export async function refreshAccount() {
