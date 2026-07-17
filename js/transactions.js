@@ -1,6 +1,10 @@
 // transactions.js
 import { appState, NetworkType } from "./config.js";
+import { Address } from "symbol-sdk";
 import { addCallback, getBlockTimestamp } from "./ws.js";
+
+
+const txMap = {};
 
 
 /* ============================================================
@@ -16,10 +20,12 @@ function formatTimestamp(symbolTimestamp) {
     appState.epochAdjustment * 1000 +
     Number(symbolTimestamp);
 
+
   return new Date(unixMs)
     .toLocaleString("ja-JP", { hour12:false });
 
 }
+
 
 
 /* ============================================================
@@ -96,6 +102,354 @@ function extractAmount(tx){
     .toUpperCase();
 
 
+  const direction =
+    signer === myPub
+    ? "send"
+    : "receive";
+
+
+
+  const mosaics =
+    tx.mosaics.map(
+      mosaic=>{
+
+
+        const info =
+          appState.mosaicInfo?.[mosaic.id];
+
+
+        const divisibility =
+          info?.divisibility ?? 0;
+
+
+        const name =
+          info?.name ?? mosaic.id;
+
+
+
+        return {
+
+          id:mosaic.id,
+
+          name,
+
+          amount:
+            Number(mosaic.amount) /
+            (10 ** divisibility)
+
+        };
+
+      }
+    );
+
+
+  return {
+    mosaics,
+    direction
+  };
+
+}
+
+
+
+/* ============================================================
+   Explorer
+============================================================ */
+function getExplorerUrl(hash){
+
+  return appState.networkType === NetworkType.TESTNET
+
+    ? `https://testnet.symbol.fyi/transactions/${hash}`
+
+    : `https://symbol.fyi/transactions/${hash}`;
+
+}
+
+
+
+/* ============================================================
+   アクティビティカード
+============================================================ */
+export function createTxCard(txInfo){
+
+
+  const {
+    hash,
+    msg,
+    state,
+    timestamp,
+    mosaics,
+    direction,
+    sender,
+    recipient
+
+  } = txInfo;
+
+
+
+  const explorer =
+    getExplorerUrl(hash);
+
+
+
+  const label =
+    direction === "receive"
+    ? "受信"
+    : "送信";
+
+
+
+  let mosaicHtml = "";
+
+
+
+  if(
+    mosaics &&
+    mosaics.length > 0
+  ){
+
+    mosaicHtml =
+      mosaics.map(
+        mosaic=>`
+
+        <div class="tx-mosaic">
+
+          <div>
+            モザイク:
+            ${mosaic.name}
+          </div>
+
+          <div>
+            数量:
+            ${mosaic.amount}
+          </div>
+
+        </div>
+
+        `
+      ).join("");
+
+  }
+
+
+
+  return `
+
+<div 
+ class="tx-item ${state === "unconfirmed" ? "unconfirmed" : "confirmed"}"
+ id="tx-${hash}"
+ onclick="window.open('${explorer}','_blank')">
+
+
+<div class="tx-body">
+
+
+<div class="tx-title">
+${label}
+</div>
+
+
+<div class="tx-status">
+${state.toUpperCase()}
+</div>
+
+
+
+<div class="tx-address">
+
+送金元:<br>
+
+${sender ?? "---"}
+
+</div>
+
+
+
+<div class="tx-address">
+
+送金先:<br>
+
+${recipient ?? "---"}
+
+</div>
+
+
+
+${mosaicHtml}
+
+
+
+<div class="tx-message">
+
+メッセージ:<br>
+
+${msg}
+
+</div>
+
+
+
+${
+ state === "confirmed" && timestamp
+
+ ?
+
+`
+
+<div class="tx-time">
+
+🕒 ${formatTimestamp(timestamp)}
+
+</div>
+
+`
+
+:
+
+""
+
+}
+
+
+
+</div>
+
+
+</div>
+
+`;
+
+}
+
+// transactions.js
+import { appState, NetworkType } from "./config.js";
+import { Address } from "symbol-sdk";
+import { addCallback, getBlockTimestamp } from "./ws.js";
+
+
+/* ============================================================
+   timestamp → 人間時間
+============================================================ */
+function formatTimestamp(symbolTimestamp) {
+
+  if (!symbolTimestamp || !appState.epochAdjustment) {
+    return "";
+  }
+
+  const unixMs =
+    appState.epochAdjustment * 1000 +
+    Number(symbolTimestamp);
+
+  return new Date(unixMs)
+    .toLocaleString("ja-JP", {
+      hour12:false
+    });
+
+}
+
+
+
+/* ============================================================
+   Hex → UTF-8
+============================================================ */
+function decodeMessage(payload){
+
+  if(!payload){
+    return "(no message)";
+  }
+
+
+  let hex = payload;
+
+
+  if(hex.startsWith("00")){
+    hex = hex.slice(2);
+  }
+
+
+  const arr =
+    hex.match(/.{1,2}/g);
+
+
+  if(!arr){
+    return "(decode error)";
+  }
+
+
+  try{
+
+    const bytes =
+      new Uint8Array(
+        arr.map(
+          h=>parseInt(h,16)
+        )
+      );
+
+
+    return new TextDecoder()
+      .decode(bytes);
+
+
+  }catch{
+
+    return "(decode error)";
+
+  }
+
+}
+
+
+
+/* ============================================================
+   Address変換
+============================================================ */
+function formatAddress(address){
+
+  if(!address){
+    return "---";
+  }
+
+
+  try{
+
+    if(typeof address === "string"){
+      return address;
+    }
+
+
+    return address
+      .plain();
+
+  }catch{
+
+    return String(address);
+
+  }
+
+}
+
+
+
+/* ============================================================
+   モザイク取得
+============================================================ */
+function extractAmount(tx){
+
+  if(!tx.mosaics || tx.mosaics.length===0){
+    return null;
+  }
+
+
+  const signer =
+    (tx.signerPublicKey || "")
+    .toUpperCase();
+
+
+  const myPub =
+    (appState.currentPubKey || "")
+    .toUpperCase();
+
+
 
   const direction =
     signer === myPub
@@ -134,10 +488,8 @@ function extractAmount(tx){
 
         };
 
-
       }
     );
-
 
 
   return {
@@ -150,24 +502,25 @@ function extractAmount(tx){
 
 
 /* ============================================================
-   Explorer
+ Explorer
 ============================================================ */
 function getExplorerUrl(hash){
 
   return appState.networkType === NetworkType.TESTNET
 
-    ? `https://testnet.symbol.fyi/transactions/${hash}`
+  ? `https://testnet.symbol.fyi/transactions/${hash}`
 
-    : `https://symbol.fyi/transactions/${hash}`;
+  : `https://symbol.fyi/transactions/${hash}`;
 
 }
 
 
 
 /* ============================================================
-   カード生成
+ アクティビティカード
 ============================================================ */
 export function createTxCard(txInfo){
+
 
   const {
     hash,
@@ -189,24 +542,20 @@ export function createTxCard(txInfo){
 
 
   const label =
-    direction === "receive"
+    direction==="receive"
     ? "受信"
     : "送信";
 
 
 
-  let mosaicHtml = "";
+  let mosaicHtml="";
 
 
 
-  if(
-    mosaics &&
-    mosaics.length > 0
-  ){
+  if(mosaics.length){
 
     mosaicHtml =
-      mosaics
-      .map(
+      mosaics.map(
         mosaic=>`
 
         <div class="tx-mosaic">
@@ -216,7 +565,6 @@ export function createTxCard(txInfo){
             ${mosaic.name}
           </div>
 
-
           <div>
             数量:
             ${mosaic.amount}
@@ -225,516 +573,418 @@ export function createTxCard(txInfo){
         </div>
 
         `
-      )
-      .join("");
+      ).join("");
 
   }
+
 
 
 
   return `
 
-  <div class="tx-item ${state === "unconfirmed" ? "unconfirmed" : "confirmed"}"
-       id="tx-${hash}"
-       onclick="window.open('${explorer}','_blank')">
+<div class="tx-item ${state==="unconfirmed" ? "unconfirmed":"confirmed"}"
+id="tx-${hash}"
+onclick="window.open('${explorer}','_blank')">
 
 
-    <div class="tx-body">
+<div class="tx-body">
 
 
-      <div class="tx-title">
-        ${label}
-      </div>
+<div class="tx-title">
+${label}
+</div>
 
 
-      <div class="tx-status">
-        ${state.toUpperCase()}
-      </div>
-
-
-
-      <div class="tx-address">
-
-        送金元:<br>
-
-        ${sender ?? "---"}
-
-      </div>
+<div class="tx-status">
+${state.toUpperCase()}
+</div>
 
 
 
-      <div class="tx-address">
+<div class="tx-address">
 
-        送金先:<br>
+送金元:<br>
 
-        ${recipient ?? "---"}
+${sender}
 
-      </div>
-
-
-
-      ${mosaicHtml}
+</div>
 
 
 
-      <div class="tx-message">
+<div class="tx-address">
 
-        メッセージ:<br>
+送金先:<br>
 
-        ${msg}
+${recipient}
 
-      </div>
-
-
-
-      ${
-        state === "confirmed" && timestamp
-
-        ?
-
-        `
-        <div class="tx-time">
-
-          🕒 ${formatTimestamp(timestamp)}
-
-        </div>
-        `
-
-        :
-
-        ""
-
-      }
+</div>
 
 
-    </div>
+
+${mosaicHtml}
 
 
-  </div>
 
-  `;
+<div class="tx-message">
+
+メッセージ:<br>
+
+${msg}
+
+</div>
+
+
+
+${
+state==="confirmed" && timestamp
+
+?
+
+`
+<div class="tx-time">
+
+🕒 ${formatTimestamp(timestamp)}
+
+</div>
+`
+
+:
+
+""
+
+}
+
+
+</div>
+
+
+</div>
+
+`;
 
 }
 
 
 
+
+const txMap={};
+
+
+
 /* ============================================================
-   DOM追加
+ DOM追加
 ============================================================ */
 function appendTx(txInfo){
 
-  const list =
-    document.getElementById(
-      "tx-list"
-    );
+ const list =
+ document.getElementById("tx-list");
 
 
-  list.insertAdjacentHTML(
-    "afterbegin",
-    createTxCard(txInfo)
-  );
-
-}
-
-
-
-const txMap = {};
-
-
-
-/* ============================================================
-   CONFIRM昇格
-============================================================ */
-function promoteTx(hash,timestamp){
-
-  const el =
-    document.getElementById(
-      `tx-${hash}`
-    );
-
-
-  if(!el){
-    return;
-  }
-
-
-  el.classList.remove(
-    "unconfirmed"
-  );
-
-
-  el.classList.add(
-    "confirmed"
-  );
-
-
-  const status =
-    el.querySelector(
-      ".tx-status"
-    );
-
-
-  if(status){
-
-    status.textContent =
-      "CONFIRMED";
-
-  }
-
+ list.insertAdjacentHTML(
+ "afterbegin",
+ createTxCard(txInfo)
+ );
 
 }
 
 
 
 /* ============================================================
-   直近10件
+ 直近10件
 ============================================================ */
 export async function loadRecentTx(){
 
-  const el =
-    document.getElementById(
-      "tx-list"
-    );
 
+const el =
+document.getElementById("tx-list");
 
-  el.textContent =
-    "読み込み中…";
 
+el.textContent="読み込み中…";
 
 
-  const address =
-    appState.currentAddress
-    .toString();
 
+const address =
+appState.currentAddress.toString();
 
 
-  const url =
-    `${appState.NODE}/transactions/confirmed?address=${address}&order=desc&limit=10`;
 
+const url =
+`${appState.NODE}/transactions/confirmed?address=${address}&order=desc&limit=10`;
 
 
-  try{
 
+try{
 
-    const res =
-      await fetch(url);
 
+const res =
+await fetch(url);
 
 
-    const json =
-      await res.json();
+const json =
+await res.json();
 
 
 
-    if(!json.data){
+el.innerHTML =
+json.data.map(item=>{
 
-      el.textContent =
-        "履歴なし";
 
-      return;
+const tx =
+item.transaction;
 
-    }
 
 
+const meta =
+item.meta;
 
-    el.innerHTML =
-      json.data
-      .map(
-        item=>{
 
 
-          const tx =
-            item.transaction;
+const amountInfo =
+extractAmount(tx);
 
 
-          const meta =
-            item.meta;
 
+const txInfo={
 
 
-          const amountInfo =
-            extractAmount(tx);
+hash:
+meta.hash,
 
 
+sender:
+amountInfo?.direction==="send"
+?
+address
+:
+formatAddress(
+tx.signerPublicKey
+),
 
-          const txInfo = {
 
 
-            hash:
-              meta.hash,
+recipient:
+formatAddress(
+tx.recipientAddress
+),
 
 
-            sender:
 
-              amountInfo?.direction === "send"
+msg:
+decodeMessage(
+tx.message
+),
 
-              ?
 
-              appState.currentAddress.toString()
 
-              :
+state:"confirmed",
 
-              tx.signerPublicKey,
 
 
+timestamp:
+meta.timestamp,
 
-            recipient:
 
-              amountInfo?.direction === "send"
 
-              ?
+mosaics:
+amountInfo?.mosaics ?? [],
 
-              tx.recipientAddress
 
-              :
 
-              appState.currentAddress.toString(),
+direction:
+amountInfo?.direction ?? null
 
 
+};
 
-            msg:
-              decodeMessage(
-                tx.message
-              ),
 
 
+txMap[meta.hash]=txInfo;
 
-            state:
-              "confirmed",
 
 
+return createTxCard(txInfo);
 
-            timestamp:
-              meta.timestamp,
 
 
+}).join("");
 
-            mosaics:
-              amountInfo?.mosaics ?? [],
 
 
+}catch(e){
 
-            direction:
-              amountInfo?.direction ?? null
+console.error(e);
 
+el.textContent="読み込みエラー";
 
-          };
+}
 
-
-
-          txMap[meta.hash] =
-            txInfo;
-
-
-
-          return createTxCard(
-            txInfo
-          );
-
-
-        }
-
-      )
-      .join("");
-
-
-
-  }catch(e){
-
-    console.error(e);
-
-    el.textContent =
-      "読み込みエラー";
-
-  }
 
 }
 
 
 
+
 /* ============================================================
-   Live Transaction
+ Live Transaction
 ============================================================ */
 export function initLiveTx(address){
 
 
-  addCallback(
-    `unconfirmedAdded/${address}`,
-    payload=>{
+addCallback(
+`unconfirmedAdded/${address}`,
+payload=>{
 
 
-      const tx =
-        payload.data;
+const tx =
+payload.data;
 
 
-      const hash =
-        tx.meta.hash;
+const hash =
+tx.meta.hash;
 
 
+if(txMap[hash]){
+return;
+}
 
-      if(txMap[hash]){
-        return;
-      }
 
 
+const amountInfo =
+extractAmount(
+tx.transaction
+);
 
-      const amountInfo =
-        extractAmount(
-          tx.transaction
-        );
 
 
+const txInfo={
 
-      const txInfo = {
 
+hash,
 
-        hash,
 
+sender:
+appState.currentAddress.toString(),
 
-        sender:
-          appState.currentAddress.toString(),
 
+recipient:
+formatAddress(
+tx.transaction.recipientAddress
+),
 
-        recipient:
-          tx.transaction.recipientAddress,
 
+msg:
+decodeMessage(
+tx.transaction.message
+),
 
-        msg:
-          decodeMessage(
-            tx.transaction.message
-          ),
 
+state:"unconfirmed",
 
-        state:
-          "unconfirmed",
 
+timestamp:null,
 
-        timestamp:
-          null,
 
+mosaics:
+amountInfo?.mosaics ?? [],
 
-        mosaics:
-          amountInfo?.mosaics ?? [],
 
+direction:
+amountInfo?.direction ?? null
 
-        direction:
-          amountInfo?.direction ?? null
 
+};
 
-      };
 
 
+txMap[hash]=txInfo;
 
-      txMap[hash]=txInfo;
 
+appendTx(txInfo);
 
-      appendTx(txInfo);
 
+}
 
-    }
-  );
+);
 
 
 
 
+addCallback(
+`confirmedAdded/${address}`,
+async payload=>{
 
-  addCallback(
-    `confirmedAdded/${address}`,
-    async payload=>{
 
+const tx =
+payload.data;
 
-      const tx =
-        payload.data;
 
+const hash =
+tx.meta.hash;
 
-      const hash =
-        tx.meta.hash;
 
 
+const blockTs =
+await getBlockTimestamp(
+tx.meta.height
+);
 
-      const blockTs =
-        await getBlockTimestamp(
-          tx.meta.height
-        );
 
 
+const amountInfo =
+extractAmount(
+tx.transaction
+);
 
-      if(!txMap[hash]){
 
 
-        const amountInfo =
-          extractAmount(
-            tx.transaction
-          );
+const txInfo={
 
 
+hash,
 
-        const txInfo = {
 
+sender:
+appState.currentAddress.toString(),
 
-          hash,
 
+recipient:
+formatAddress(
+tx.transaction.recipientAddress
+),
 
-          sender:
-            appState.currentAddress.toString(),
 
+msg:
+decodeMessage(
+tx.transaction.message
+),
 
 
-          recipient:
-            tx.transaction.recipientAddress,
+state:"confirmed",
 
 
+timestamp:blockTs,
 
-          msg:
-            decodeMessage(
-              tx.transaction.message
-            ),
 
+mosaics:
+amountInfo?.mosaics ?? [],
 
 
-          state:
-            "confirmed",
+direction:
+amountInfo?.direction ?? null
 
 
+};
 
-          timestamp:
-            blockTs,
 
 
+txMap[hash]=txInfo;
 
-          mosaics:
-            amountInfo?.mosaics ?? [],
 
+appendTx(txInfo);
 
 
-          direction:
-            amountInfo?.direction ?? null
+}
 
-
-        };
-
-
-
-        txMap[hash]=txInfo;
-
-
-        appendTx(txInfo);
-
-
-
-      }else{
-
-
-        promoteTx(
-          hash,
-          blockTs
-        );
-
-
-      }
-
-
-    }
-  );
+);
 
 }
