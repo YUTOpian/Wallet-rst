@@ -1,4 +1,3 @@
-```javascript
 import { appState } from "./config.js";
 
 console.log("index.js loaded");
@@ -16,20 +15,25 @@ import { showPopup } from "./utils.js";
 
 
 
-window.addEventListener("load", async () => {
+window.addEventListener(
+"load",
+async()=>{
 
 
   // ============================
   // SSS初期化
   // ============================
 
-  await new Promise(resolve =>
-    setTimeout(resolve,1000)
+
+  await new Promise(
+    resolve =>
+      setTimeout(resolve,1000)
   );
 
 
 
   await autoConnectSSS();
+
 
 
 
@@ -50,15 +54,21 @@ window.addEventListener("load", async () => {
 
 
 
+
   // ============================
-  // SDK
+  // SDK初期化
   // ============================
+
 
   await initSdk();
 
 
 
+  // アカウント取得
+
   await refreshAccount();
+
+
 
 
 
@@ -107,15 +117,24 @@ window.addEventListener("load", async () => {
 
 
     document
-    .querySelectorAll(".page")
+    .querySelectorAll(
+      ".page"
+    )
     .forEach(
       p=>{
-        p.classList.remove("active");
+
+        p.classList.remove(
+          "active"
+        );
+
       }
     );
 
 
-    page.classList.add("active");
+
+    page.classList.add(
+      "active"
+    );
 
 
   }
@@ -126,163 +145,89 @@ window.addEventListener("load", async () => {
 
 
 
+
+
   // ============================
   // 送金ボタン
-  // account → mosaic選択
+  // account
+  // ↓
+  // mosaic選択
   // ============================
 
 
-document
-.getElementById("send-btn")
-?.addEventListener(
-"click",
-()=>{
+  document
+  .getElementById(
+    "send-btn"
+  )
+  ?.addEventListener(
+    "click",
+    ()=>{
 
 
-console.log("送金画面へ");
+      console.log(
+        "送金画面へ"
+      );
 
 
-showPage(sendPage);
 
+      showPage(
+        sendPage
+      );
 
 
-const sendList =
-document.getElementById(
-"send-mosaic-list"
-);
 
 
-const mosaicList =
-document.getElementById(
-"mosaic-list"
-);
+      const sendList =
+        document.getElementById(
+          "send-mosaic-list"
+        );
 
 
 
-if(
-!sendList ||
-!mosaicList
-){
+      const mosaicList =
+        document.getElementById(
+          "mosaic-list"
+        );
 
-console.log(
-"モザイク一覧取得失敗"
-);
 
-return;
 
-}
+      if(
+        !sendList ||
+        !mosaicList
+      ){
 
+        console.log(
+          "モザイク一覧取得失敗"
+        );
 
+        return;
 
+      }
 
-// 保有モザイク一覧をコピー
 
-sendList.innerHTML =
-mosaicList.innerHTML;
 
 
 
-console.log(
-"コピー完了:",
-sendList.querySelectorAll(".mosaic-item").length
-);
+      // 保有モザイク一覧コピー
 
+      sendList.innerHTML =
+        mosaicList.innerHTML;
 
 
 
+      console.log(
+        "送金一覧件数:",
+        sendList
+        .querySelectorAll(
+          ".mosaic-item"
+        )
+        .length
+      );
 
 
-// コピー後にクリックイベント登録
 
-sendList
-.querySelectorAll(".mosaic-item")
-.forEach(
-(item)=>{
-
-
-item.onclick = ()=>{
-
-
-console.log(
-"モザイククリック:",
-item
-);
-
-
-
-const name =
-item
-.querySelector(
-".mosaic-name"
-)
-.textContent;
-
-
-
-const id =
-item
-.querySelector(
-".mosaic-id"
-)
-.textContent;
-
-
-
-const amount =
-item
-.querySelector(
-".mosaic-amount"
-)
-.textContent;
-
-
-
-
-
-document
-.getElementById(
-"selected-mosaic-name"
-)
-.textContent =
-name;
-
-
-
-document
-.getElementById(
-"selected-mosaic-id"
-)
-.value =
-id;
-
-
-
-document
-.getElementById(
-"selected-mosaic-balance"
-)
-.textContent =
-amount;
-
-
-
-
-
-// 送金入力画面へ
-
-showPage(
-transferPage
-);
-
-
-
-};
-
-
-});
-
-
-});
+    }
+  );
 
 
 
@@ -294,7 +239,9 @@ transferPage
 
   // ============================
   // モザイク選択
-  // mosaic → transfer
+  // mosaic
+  // ↓
+  // transfer
   // ============================
 
 
@@ -304,7 +251,7 @@ transferPage
   )
   ?.addEventListener(
     "click",
-    (e)=>{
+    e=>{
 
 
       const item =
@@ -323,13 +270,23 @@ transferPage
 
 
 
+      console.log(
+        "モザイククリック",
+        item
+      );
+
+
+
+
 
       const name =
         item
         .querySelector(
           ".mosaic-name"
         )
-        ?.textContent;
+        ?.textContent
+        .trim();
+
 
 
 
@@ -338,7 +295,9 @@ transferPage
         .querySelector(
           ".mosaic-id"
         )
-        ?.textContent;
+        ?.textContent
+        .trim();
+
 
 
 
@@ -347,18 +306,9 @@ transferPage
         .querySelector(
           ".mosaic-amount"
         )
-        ?.textContent;
+        ?.textContent
+        .trim();
 
-
-
-
-
-      console.log(
-        "選択:",
-        name,
-        id,
-        amount
-      );
 
 
 
@@ -371,6 +321,7 @@ transferPage
       )
       .textContent =
         name;
+
 
 
 
@@ -397,6 +348,18 @@ transferPage
 
 
 
+
+      console.log(
+        "送金対象:",
+        name,
+        id,
+        amount
+      );
+
+
+
+
+
       showPage(
         transferPage
       );
@@ -416,7 +379,9 @@ transferPage
 
   // ============================
   // 戻る
-  // mosaic → account
+  // mosaic
+  // ↓
+  // account
   // ============================
 
 
@@ -443,9 +408,13 @@ transferPage
 
 
 
+
+
   // ============================
   // 戻る
-  // transfer → mosaic
+  // transfer
+  // ↓
+  // mosaic
   // ============================
 
 
@@ -497,7 +466,7 @@ transferPage
 
 
   // ============================
-  // 受取
+  // 受け取り
   // ============================
 
 
@@ -527,7 +496,7 @@ transferPage
 
 
   // ============================
-  // コピー
+  // アドレスコピー
   // ============================
 
 
@@ -545,7 +514,9 @@ transferPage
         .getElementById(
           "account-address"
         )
-        .textContent;
+        .textContent
+        .trim();
+
 
 
 
@@ -576,7 +547,7 @@ transferPage
 
 
   // ============================
-  // TX
+  // TX読み込み
   // ============================
 
 
@@ -584,20 +555,26 @@ transferPage
 
 
 
-  initWebSocket(
+
+  if(
     appState.currentAddress
-    .toString()
-  );
+  ){
+
+    initWebSocket(
+      appState.currentAddress
+      .toString()
+    );
 
 
 
-  initLiveTx(
-    appState.currentAddress
-    .toString()
-  );
+    initLiveTx(
+      appState.currentAddress
+      .toString()
+    );
+
+  }
+
 
 
 
 });
-```
-
