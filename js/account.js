@@ -280,7 +280,7 @@ if (mosaicList) {
   `;
 
   item.onclick = () => {
-
+  console.log("モザイククリック:", idHex);
     // 既存のプルダウンも同期
     if (select) {
       select.value = idHex;
@@ -305,6 +305,18 @@ const dialog =
   document.getElementById("transfer-dialog");
 
 if (dialog) {
+  const dialog =
+  document.getElementById("transfer-dialog");
+
+
+console.log("dialog:", dialog);
+
+
+if (dialog) {
+
+  dialog.showModal();
+
+}
 
   dialog.showModal();
 
