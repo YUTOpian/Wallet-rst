@@ -568,30 +568,6 @@ body {
    送金モザイク選択 横スライドパネル
 ============================================================ */
 
-#send-panel {
-
-  position: fixed;
-
-  top: 0;
-  right: -100%;
-
-  width: 100%;
-  height: 100vh;
-
-  background: #0f172a;
-
-  z-index: 8000;
-
-  transition: right 0.3s ease;
-
-  overflow-y: auto;
-
-  padding: 30px 20px;
-
-  box-sizing: border-box;
-
-}
-
 
 
 /* 表示状態 */
