@@ -35,11 +35,9 @@ export async function sendTx() {
     document.getElementById("tx-message").value || "";
 
 
-  /*
-    選択されたモザイクID取得
-  */
-  const selectedMosaicId =
-    document.getElementById("selected-mosaic-id").value;
+ /*
+  選択されたモザイクID取得
+*/
 
 const selectedMosaicElement =
   document.getElementById("selected-mosaic-id");
@@ -53,13 +51,12 @@ console.log(
 
 const selectedMosaicId =
   selectedMosaicElement?.value;
-  
+
 
 console.log(
   "selected mosaic id:",
   selectedMosaicId
 );
-
 
   
 
