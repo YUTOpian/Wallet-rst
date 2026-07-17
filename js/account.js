@@ -284,13 +284,13 @@ item.onclick = () => {
   console.log("モザイククリック:", idHex);
 
 
-  // 既存のプルダウンも同期
+  // プルダウン同期
   if (select) {
     select.value = idHex;
   }
 
 
-  // 選択モザイクID保存
+  // 選択モザイク情報保存
   document.getElementById("selected-mosaic-id").value = idHex;
 
 
@@ -324,9 +324,9 @@ item.onclick = () => {
 };
 
 
-    /*
-      XYM残高表示
-    */
+// モザイク一覧へ追加
+mosaicList.appendChild(item);
+
 
     const xymId =
       appState.networkType === 152
