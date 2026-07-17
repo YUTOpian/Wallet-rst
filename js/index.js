@@ -132,61 +132,157 @@ window.addEventListener("load", async () => {
   // ============================
 
 
-  document
-  .getElementById("send-btn")
-  ?.addEventListener(
-    "click",
-    ()=>{
+document
+.getElementById("send-btn")
+?.addEventListener(
+"click",
+()=>{
 
 
-      console.log(
-        "送金画面へ"
-      );
+console.log("送金画面へ");
 
 
-
-      showPage(
-        sendPage
-      );
+showPage(sendPage);
 
 
 
-
-      const sendList =
-        document.getElementById(
-          "send-mosaic-list"
-        );
-
+const sendList =
+document.getElementById(
+"send-mosaic-list"
+);
 
 
-      const mosaicList =
-        document.getElementById(
-          "mosaic-list"
-        );
+const mosaicList =
+document.getElementById(
+"mosaic-list"
+);
 
 
 
-      if(
-        sendList &&
-        mosaicList
-      ){
+if(
+!sendList ||
+!mosaicList
+){
 
-        sendList.innerHTML =
-          mosaicList.innerHTML;
+console.log(
+"モザイク一覧取得失敗"
+);
 
+return;
 
-
-        console.log(
-          "送金一覧:",
-          sendList.innerHTML
-        );
+}
 
 
-      }
 
 
-    }
-  );
+// 保有モザイク一覧をコピー
+
+sendList.innerHTML =
+mosaicList.innerHTML;
+
+
+
+console.log(
+"コピー完了:",
+sendList.querySelectorAll(".mosaic-item").length
+);
+
+
+
+
+
+
+// コピー後にクリックイベント登録
+
+sendList
+.querySelectorAll(".mosaic-item")
+.forEach(
+(item)=>{
+
+
+item.onclick = ()=>{
+
+
+console.log(
+"モザイククリック:",
+item
+);
+
+
+
+const name =
+item
+.querySelector(
+".mosaic-name"
+)
+.textContent;
+
+
+
+const id =
+item
+.querySelector(
+".mosaic-id"
+)
+.textContent;
+
+
+
+const amount =
+item
+.querySelector(
+".mosaic-amount"
+)
+.textContent;
+
+
+
+
+
+document
+.getElementById(
+"selected-mosaic-name"
+)
+.textContent =
+name;
+
+
+
+document
+.getElementById(
+"selected-mosaic-id"
+)
+.value =
+id;
+
+
+
+document
+.getElementById(
+"selected-mosaic-balance"
+)
+.textContent =
+amount;
+
+
+
+
+
+// 送金入力画面へ
+
+showPage(
+transferPage
+);
+
+
+
+};
+
+
+});
+
+
+});
 
 
 
