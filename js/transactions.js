@@ -1,6 +1,5 @@
 // transactions.js
 import { appState, NetworkType } from "./config.js";
-import { Address } from "symbol-sdk";
 import { addCallback, getBlockTimestamp } from "./ws.js";
 
 
@@ -321,10 +320,6 @@ ${
 
 }
 
-// transactions.js
-import { appState, NetworkType } from "./config.js";
-import { Address } from "symbol-sdk";
-import { addCallback, getBlockTimestamp } from "./ws.js";
 
 
 /* ============================================================
