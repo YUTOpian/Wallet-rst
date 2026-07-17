@@ -6,25 +6,36 @@ import { appState } from "./config.js";
 ============================================================ */
 export async function checkHarvestStatus() {
   const statusEl = document.getElementById("harvest-status");
-  if (!statusEl) return;
+
+  if (!statusEl) {
+    console.log("harvest-status がありません");
+    return;
+  }
 
   try {
+    console.log("ハーベスト状態確認開始");
     const address = appState.currentAddress.toString();
+    console.log("確認アドレス:", address);
+
     statusEl.textContent = "状態確認中...";
 
-    // Symbol REST API: account info取得
     const url = `${appState.NODE}/accounts/${address}`;
-    const res = await fetch(url);
-    const json = await res.json();
-    const account = json.account;
+    console.log("REST URL:", url);
 
+    const res = await fetch(url);
+    console.log("レスポンス:", res.status);
+
+    const json = await res.json();
+    console.log("JSON:", json);
+
+    const account = json.account;
     if (!account) {
       statusEl.textContent = "アカウント情報取得失敗";
       return;
     }
 
-    // importance確認 (0の場合はハーベスト条件未達または委任未設定)
     const importance = account.importance;
+    console.log("importance:", importance);
 
     if (importance && Number(importance) > 0) {
       statusEl.textContent = "✅ ハーベスト可能状態";
