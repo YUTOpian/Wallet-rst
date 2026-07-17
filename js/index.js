@@ -170,7 +170,7 @@ tabActivity?.addEventListener("click", () => {
   // ============================
   // 受け取り画面表示
   // ============================
-  document.getElementById("receive-btn")?.addEventListener("click", () => {
+  document.getElementById("receive-btn")?.addEventListener("click", async () => {
     console.log("受取画面");
     showPage(receivePage);
 
@@ -179,6 +179,7 @@ tabActivity?.addEventListener("click", () => {
     // アドレス表示とQRコード生成
     document.getElementById("receive-address").textContent = address;
     const qr = document.getElementById("receive-qrcode");
+    qr.innerHTML = "";
 
 const dataUrl = await QRCode.toDataURL(address, {
     width: 220,
