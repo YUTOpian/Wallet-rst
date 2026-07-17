@@ -286,10 +286,18 @@ if (mosaicList) {
       select.value = idHex;
     }
 
-    // 新UIへ反映
-    document.getElementById("selected-mosaic-id").value = idHex;
-    document.getElementById("selected-mosaic-name").textContent = name;
-    document.getElementById("selected-mosaic-balance").textContent =
+// 新UIへ反映
+document.getElementById("selected-mosaic-id").value = idHex;
+
+document.getElementById("selected-mosaic-name").textContent =
+  (
+    idHex === "6BED913FA20223F8" ||
+    idHex === "72C0212E67A08BCE"
+  )
+    ? "XYM"
+    : (namespaceMap[idHex] ?? name);
+
+document.getElementById("selected-mosaic-balance").textContent =
   `${(amount / (10 ** divisibility)).toLocaleString()}`;
 
     // 送金フォームへスクロール
