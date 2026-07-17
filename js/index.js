@@ -123,7 +123,7 @@ window.addEventListener("load", async () => {
     "click",
     ()=>{
 
-
+  console.log("送金ボタン押された");
       showPage(sendPage);
 
 
@@ -138,7 +138,7 @@ window.addEventListener("load", async () => {
           "mosaic-list"
         );
 
-
+console.log("send-btn イベント登録完了");
 
       // 保有モザイクをコピー
 
