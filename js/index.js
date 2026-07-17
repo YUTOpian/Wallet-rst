@@ -1,3 +1,4 @@
+```javascript
 import { appState } from "./config.js";
 
 console.log("index.js loaded");
@@ -13,20 +14,22 @@ import { showPopup } from "./utils.js";
 
 
 
+
+
 window.addEventListener("load", async () => {
 
 
-  // SSS初期化待ち
+  // ============================
+  // SSS初期化
+  // ============================
+
   await new Promise(resolve =>
     setTimeout(resolve,1000)
   );
 
 
 
-  // SSS接続
-
   await autoConnectSSS();
-
 
 
 
@@ -45,14 +48,18 @@ window.addEventListener("load", async () => {
   }
 
 
-  // SDK初期化
+
+
+  // ============================
+  // SDK
+  // ============================
 
   await initSdk();
 
 
-  // アカウント情報取得
 
   await refreshAccount();
+
 
 
 
@@ -87,8 +94,12 @@ window.addEventListener("load", async () => {
 
 
 
+
+
+
+
   // ============================
-  // ページ切替関数
+  // ページ切替
   // ============================
 
 
@@ -111,6 +122,10 @@ window.addEventListener("load", async () => {
 
 
 
+
+
+
+
   // ============================
   // 送金ボタン
   // account → mosaic選択
@@ -123,8 +138,18 @@ window.addEventListener("load", async () => {
     "click",
     ()=>{
 
-  console.log("送金ボタン押された");
-      showPage(sendPage);
+
+      console.log(
+        "送金画面へ"
+      );
+
+
+
+      showPage(
+        sendPage
+      );
+
+
 
 
       const sendList =
@@ -133,122 +158,151 @@ window.addEventListener("load", async () => {
         );
 
 
+
       const mosaicList =
         document.getElementById(
           "mosaic-list"
         );
 
-console.log("send-btn イベント登録完了");
-
-      // 保有モザイクをコピー
-
-      sendList.innerHTML =
-        mosaicList.innerHTML;
-
-console.log(
-  "送金一覧HTML:",
-  sendList.innerHTML
-);
 
 
-console.log(
-  "mosaic item数:",
-  sendList.querySelectorAll(".mosaic-item").length
-);
+      if(
+        sendList &&
+        mosaicList
+      ){
 
-      
+        sendList.innerHTML =
+          mosaicList.innerHTML;
 
-      // モザイク選択
 
-      sendList
-      .querySelectorAll(
-        ".mosaic-item"
+
+        console.log(
+          "送金一覧:",
+          sendList.innerHTML
+        );
+
+
+      }
+
+
+    }
+  );
+
+
+
+
+
+
+
+
+
+  // ============================
+  // モザイク選択
+  // mosaic → transfer
+  // ============================
+
+
+  document
+  .getElementById(
+    "send-mosaic-list"
+  )
+  ?.addEventListener(
+    "click",
+    (e)=>{
+
+
+      const item =
+        e.target.closest(
+          ".mosaic-item"
+        );
+
+
+
+      if(!item){
+
+        return;
+
+      }
+
+
+
+
+
+      const name =
+        item
+        .querySelector(
+          ".mosaic-name"
+        )
+        ?.textContent;
+
+
+
+      const id =
+        item
+        .querySelector(
+          ".mosaic-id"
+        )
+        ?.textContent;
+
+
+
+      const amount =
+        item
+        .querySelector(
+          ".mosaic-amount"
+        )
+        ?.textContent;
+
+
+
+
+
+      console.log(
+        "選択:",
+        name,
+        id,
+        amount
+      );
+
+
+
+
+
+
+      document
+      .getElementById(
+        "selected-mosaic-name"
       )
-      .forEach(
-        item=>{
-
-console.log(
-  "送金一覧件数:",
-  sendList.querySelectorAll(".mosaic-item").length
-);
-          item.addEventListener(
-            "click",
-            ()=>{
-
-
-              const name =
-                item
-                .querySelector(
-                  ".mosaic-name"
-                )
-                ?.textContent;
+      .textContent =
+        name;
 
 
 
-              const id =
-                item
-                .querySelector(
-                  ".mosaic-id"
-                )
-                ?.textContent;
 
-
-
-              const amount =
-                item
-                .querySelector(
-                  ".mosaic-amount"
-                )
-                ?.textContent;
+      document
+      .getElementById(
+        "selected-mosaic-id"
+      )
+      .value =
+        id;
 
 
 
 
 
-
-              document
-              .getElementById(
-                "selected-mosaic-name"
-              )
-              .textContent =
-                name;
-
-
-
-              document
-              .getElementById(
-                "selected-mosaic-id"
-              )
-              .value =
-                id;
-
-
-
-              document
-              .getElementById(
-                "selected-mosaic-balance"
-              )
-              .textContent =
-                amount;
+      document
+      .getElementById(
+        "selected-mosaic-balance"
+      )
+      .textContent =
+        amount;
 
 
 
 
 
-              // mosaic選択
-              // → 送金画面
-
-              showPage(
-                transferPage
-              );
-
-
-
-            }
-          );
-
-
-        }
+      showPage(
+        transferPage
       );
 
 
@@ -347,7 +401,7 @@ console.log(
 
 
   // ============================
-  // 受取画面
+  // 受取
   // ============================
 
 
@@ -375,8 +429,9 @@ console.log(
 
 
 
+
   // ============================
-  // アドレスコピー
+  // コピー
   // ============================
 
 
@@ -400,15 +455,17 @@ console.log(
 
       navigator.clipboard
       .writeText(addr)
-      .then(()=>{
+      .then(
+        ()=>{
 
 
-        showPopup(
-          "アドレスをコピーしました"
-        );
+          showPopup(
+            "アドレスをコピーしました"
+          );
 
 
-      });
+        }
+      );
 
 
     }
@@ -423,7 +480,7 @@ console.log(
 
 
   // ============================
-  // TX読み込み
+  // TX
   // ============================
 
 
@@ -446,3 +503,5 @@ console.log(
 
 
 });
+```
+
