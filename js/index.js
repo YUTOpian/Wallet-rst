@@ -158,6 +158,21 @@ window.addEventListener("load", async () => {
         ){
 
 
+          console.log(
+  "send panel",
+  panel
+);
+
+console.log(
+  "send list",
+  sendList
+);
+
+console.log(
+  "mosaic list",
+  mosaicList
+);
+
           // 保有モザイク一覧コピー
 
           sendList.innerHTML =
