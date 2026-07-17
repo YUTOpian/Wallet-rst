@@ -119,12 +119,44 @@ export async function refreshAccount() {
       } else {
         try {
           // モザイク情報の個別取得
-          const mosaicRes = await fetch(new URL(`/mosaics/${idHex}`, appState.NODE));
-          const mosaicData = await mosaicRes.json();
-          const mosaicInfo = mosaicData.mosaic;
+            const mosaicRes = await fetch(
+    new URL(`/mosaics/${idHex}`, appState.NODE)
+  );
 
-          divisibility = mosaicInfo?.properties?.find((p) => p.id === 1)?.value ?? 0;
-        } catch(e) {
+
+  if (!mosaicRes.ok) {
+
+    console.warn(
+      "モザイク詳細取得不可:",
+      idHex,
+      mosaicRes.status
+    );
+
+    return {
+      idHex,
+      amount,
+      divisibility: 0,
+      name
+    };
+
+  }
+
+
+  const mosaicData =
+    await mosaicRes.json();
+
+
+  const mosaicInfo =
+    mosaicData.mosaic;
+
+
+  divisibility =
+    mosaicInfo?.properties?.find(
+      (p) => p.id === 1
+    )?.value ?? 0;
+
+
+}catch(e) {
           console.warn("モザイク情報取得失敗", idHex);
         }
       }
