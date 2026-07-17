@@ -177,5 +177,179 @@ export async function loadRecentTx() {
   } catch (e) {
     console.error(e);
     el.textContent = "読み込みエラー";
+
+     /* ============================================================
+   Live Tx（WS）
+============================================================ */
+export function initLiveTx(address) {
+
+  // 未承認トランザクション
+  addCallback(
+    `unconfirmedAdded/${address}`,
+    (payload)=>{
+
+      const tx = payload.data;
+
+      const hash = tx.meta.hash;
+
+
+      if(txMap[hash]) return;
+
+
+      const amountInfo =
+        extractAmount(
+          tx.transaction
+        );
+
+
+      const txInfo = {
+
+        hash,
+
+        sender:
+          amountInfo?.direction === "send"
+          ?
+          appState.currentAddress.toString()
+          :
+          tx.transaction.signerPublicKey,
+
+
+        recipient:
+          amountInfo?.direction === "send"
+          ?
+          tx.transaction.recipientAddress
+          :
+          appState.currentAddress.toString(),
+
+
+        msg:
+          decodeMessage(
+            tx.transaction.message
+          ),
+
+
+        state:
+          "unconfirmed",
+
+
+        timestamp:
+          null,
+
+
+        mosaics:
+          amountInfo?.mosaics ?? [],
+
+
+        direction:
+          amountInfo?.direction ?? null
+
+      };
+
+
+      txMap[hash] = txInfo;
+
+
+      appendTx(txInfo);
+
+    }
+  );
+
+
+
+  // 承認済みトランザクション
+  addCallback(
+    `confirmedAdded/${address}`,
+    async(payload)=>{
+
+
+      const tx =
+        payload.data;
+
+
+      const hash =
+        tx.meta.hash;
+
+
+
+      const blockTs =
+        await getBlockTimestamp(
+          tx.meta.height
+        );
+
+
+
+      const amountInfo =
+        extractAmount(
+          tx.transaction
+        );
+
+
+
+      const txInfo = {
+
+        hash,
+
+
+        sender:
+          amountInfo?.direction === "send"
+          ?
+          appState.currentAddress.toString()
+          :
+          tx.transaction.signerPublicKey,
+
+
+        recipient:
+          amountInfo?.direction === "send"
+          ?
+          tx.transaction.recipientAddress
+          :
+          appState.currentAddress.toString(),
+
+
+        msg:
+          decodeMessage(
+            tx.transaction.message
+          ),
+
+
+        state:
+          "confirmed",
+
+
+        timestamp:
+          blockTs,
+
+
+        mosaics:
+          amountInfo?.mosaics ?? [],
+
+
+        direction:
+          amountInfo?.direction ?? null
+
+      };
+
+
+
+      if(!txMap[hash]){
+
+        txMap[hash] = txInfo;
+
+        appendTx(txInfo);
+
+      }
+      else{
+
+        promoteTx(
+          hash,
+          blockTs
+        );
+
+      }
+
+    }
+  );
+
+}
   }
 }
