@@ -19,6 +19,15 @@ const recipientRaw = document.getElementById("tx-recipient").value.trim();
 const amountStr = document.getElementById("tx-amount").value;
 const messageText = document.getElementById("tx-message").value || "";
 
+  if (!selectedMosaicId) {
+  setStatus(
+    "tx-status",
+    "モザイクを選択してください。",
+    "error"
+  );
+  return;
+}
+
 const selectedMosaicId =
   document.getElementById("selected-mosaic-id").value;
 
