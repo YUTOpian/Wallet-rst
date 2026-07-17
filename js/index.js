@@ -7,7 +7,7 @@ import { initWebSocket } from "./ws.js";
 import { initSdk } from "./sdk.js";
 import { showPopup } from "./utils.js";
 import { checkHarvestStatus } from "./harvest.js";
-import QRCode from "https://esm.sh/qrcode";
+//import QRCode from "https://esm.sh/qrcode";
 
 window.addEventListener("load", async () => {
   // ============================
