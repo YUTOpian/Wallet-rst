@@ -60,7 +60,10 @@ export async function refreshAccount() {
     const namespaceMap = {};
     const mosaicIds = mosaics.map(m => {
       if (typeof m.id === "object") {
-        return toBigInt(m.id).toString(16).toUpperCase();
+        return toBigInt(m.id)
+  .toString(16)
+  .toUpperCase()
+  .padStart(16, "0");
       }
       return typeof m.id === "string" ? m.id.toUpperCase() : m.id.toString(16).toUpperCase();
     });
@@ -100,7 +103,11 @@ export async function refreshAccount() {
     // APIリクエストの並列化用配列
     const fetchPromises = mosaics.map(async (mosaic) => {
       // IDのパース
-      const idHex = toBigInt(mosaic.id).toString(16).toUpperCase();
+      const idHex = 
+  toBigInt(mosaic.id)
+    .toString(16)
+    .toUpperCase()
+    .padStart(16, "0");
 
       // 保有量のパース（amountがobject構造の場合を考慮）
       const amount = Number(
