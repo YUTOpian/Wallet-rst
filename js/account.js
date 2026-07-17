@@ -26,14 +26,12 @@ function toBigInt(uint64) {
   // 文字列の場合
   if (typeof uint64 === "string") {
 
-    // 16進文字列
     if (/^[0-9A-Fa-f]+$/.test(uint64)) {
 
       return BigInt("0x" + uint64);
 
     }
 
-    // 10進文字列
     return BigInt(uint64);
 
   }
