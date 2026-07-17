@@ -34,7 +34,6 @@ window.addEventListener("load", async () => {
   const receivePage = document.getElementById("receive-page");
   const harvestPage = document.getElementById("harvest-page");
 
-console.log("harvestPage:", harvestPage);
   
   // ============================
   // ページ切替共通関数
