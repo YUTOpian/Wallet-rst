@@ -4,104 +4,329 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <title>Symbol Simple Wallet</title>
 
     <link rel="stylesheet" href="css/base.css" />
     <link rel="stylesheet" href="css/wallet.css" />
 </head>
 
+
 <body>
 
-    <header>
-        <h2>Symbol Simple Wallet</h2>
-        <div class="header-info">
-            <p><span id="node-info">---</span></p>
+
+<header>
+
+    <h2>
+        Symbol Simple Wallet
+    </h2>
+
+    <div class="header-info">
+        <p>
+            <span id="node-info">---</span>
+        </p>
+    </div>
+
+</header>
+
+
+
+<div class="container">
+
+
+
+    <!-- ▼ アカウント情報 -->
+
+    <div class="card">
+
+        <h2>
+            アカウント情報
+        </h2>
+
+
+        <p>
+            <b>アドレス：</b>
+        </p>
+
+
+        <div class="address-row">
+
+            <span
+                id="account-address"
+                class="address-text">
+                ---
+            </span>
+
+
+            <button
+                id="copy-address-btn"
+                class="copy-btn">
+                🗒️
+            </button>
+
+
         </div>
-    </header>
 
-    <div class="container">
 
-        <!-- ▼ アカウント情報 -->
-        <div class="card">
-            <h2>アカウント情報</h2>
 
-            <p><b>アドレス：</b></p>
-            <div class="address-row">
-                <span id="account-address" class="address-text">---</span>
-                <button id="copy-address-btn" class="copy-btn">🗒️</button>
-            </div>
+        <p>
 
-            <p><b>残高：</b>
-                <span id="account-balance">---</span>
-            </p>
+            <b>残高：</b>
 
-            <hr>
+            <span id="account-balance">
+                ---
+            </span>
 
-            <h3>保有モザイク</h3>
+        </p>
 
-            <div id="mosaic-list">
-                読み込み中...
-            </div>
+
+
+        <hr>
+
+
+
+        <h3>
+            保有モザイク
+        </h3>
+
+
+
+        <div id="mosaic-list">
+
+            読み込み中...
 
         </div>
 
-        <!-- ▼ モザイク送金 -->
-        <div class="card" id="transfer-card">
 
-            <h2>モザイク送金</h2>
+    </div>
+
+
+
+
+
+
+    <!-- ▼ 送金ポップアップ -->
+
+    <dialog id="transfer-dialog">
+
+
+        <div
+            class="card"
+            id="transfer-card">
+
+
+
+            <h2>
+
+                モザイク送金
+
+
+                <button
+                    id="close-transfer-dialog">
+
+                    ✕
+
+                </button>
+
+
+            </h2>
+
+
+
+
 
             <p>
-                <b>送信モザイク：</b>
-                <span id="selected-mosaic-name">未選択</span>
+
+                <b>
+                    送信モザイク：
+                </b>
+
+
+                <span id="selected-mosaic-name">
+
+                    未選択
+
+                </span>
+
+
             </p>
+
+
+
+
 
             <p>
-                <b>保有数量：</b>
-                <span id="selected-mosaic-balance">---</span>
+
+                <b>
+                    保有数量：
+                </b>
+
+
+                <span id="selected-mosaic-balance">
+
+                    ---
+
+                </span>
+
+
             </p>
 
-            <!-- 選択されたモザイクIDを保持 -->
+
+
+
+
+            <!-- 選択されたモザイクID -->
+
             <input
                 type="hidden"
                 id="selected-mosaic-id" />
 
+
+
+
+
+
+
             <input
+
                 id="tx-recipient"
+
                 class="input-box"
+
                 placeholder="宛先アドレス" />
 
+
+
+
+
+
             <input
+
                 id="tx-amount"
+
                 class="input-box"
+
                 type="number"
+
                 min="0"
+
                 step="any"
+
                 placeholder="数量" />
 
+
+
+
+
+
+
             <textarea
+
                 id="tx-message"
+
                 class="input-box"
-                placeholder="メッセージ（任意）"></textarea>
+
+                placeholder="メッセージ（任意）">
+
+            </textarea>
+
+
+
+
+
+
 
             <button
+
                 id="btn-transfer"
+
                 class="button-primary">
+
+
                 送金する
+
+
             </button>
 
-            <div id="tx-status" class="status-text"></div>
+
+
+
+
+
+
+            <div
+
+                id="tx-status"
+
+                class="status-text">
+
+
+            </div>
+
+
+
+
 
         </div>
 
-        <!-- ▼ 最近のトランザクション -->
-        <div class="card">
-            <h2>最近のトランザクション</h2>
-            <div id="tx-list">読み込み中…</div>
+
+
+    </dialog>
+
+
+
+
+
+
+
+
+
+    <!-- ▼ 最近のトランザクション -->
+
+
+    <div class="card">
+
+
+        <h2>
+
+            最近のトランザクション
+
+        </h2>
+
+
+
+        <div id="tx-list">
+
+            読み込み中…
+
         </div>
+
 
     </div>
 
-    <script type="module" src="js/index.js"></script>
+
+
+
+</div>
+
+
+
+
+
+<script
+
+    type="module"
+
+    src="js/index.js">
+
+</script>
+
+
+
+</body>
+
+
+</html>
 
 </body>
 
