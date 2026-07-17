@@ -93,7 +93,7 @@ export function createTxCard(txInfo) {
   if (mosaics && mosaics.length > 0) {
     mosaicHtml = mosaics.map(mosaic => `
       <div class="tx-mosaic">
-        <div>モザイク: ${mosaic.name}</div>
+        <div>トークン: ${mosaic.name}</div>
         <div>数量: ${mosaic.amount}</div>
       </div>
     `).join("");
