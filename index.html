@@ -33,11 +33,12 @@
         <p><b>残高：</b> <span id="account-balance">---</span></p>
 
         <div class="wallet-actions">
-          <button id="send-btn" class="button-primary">送金</button>
           <button id="receive-btn" class="button-primary">受け取り</button>
+          <button id="send-btn" class="button-primary">送金</button>
+          <button id="harvest-btn" class="button-primary">ハーベスト</button>
         </div>
         <hr>
-        <h3>保有モザイク</h3>
+        <h3>保有トークン</h3>
         <div id="mosaic-list">読み込み中...</div>
       </div>
     </div>
@@ -49,7 +50,7 @@
       <div class="card">
         <h2>送金</h2>
         <button id="back-account" class="button-primary">← 戻る</button>
-        <p>送りたいモザイクを選択してください</p>
+        <p>送りたいトークンを選択してください</p>
         <div id="send-mosaic-list"></div>
       </div>
     </div>
@@ -59,8 +60,8 @@
     ============================================================ -->
     <div id="transfer-page" class="page">
       <div class="card">
-        <h2>モザイク送金</h2>
-        <p><b>送信モザイク：</b> <span id="selected-mosaic-name">未選択</span></p>
+        <h2>トークン送金</h2>
+        <p><b>送信トークン：</b> <span id="selected-mosaic-name">未選択</span></p>
         <p><b>保有数量：</b> <span id="selected-mosaic-balance">---</span></p>
 
         <input type="hidden" id="selected-mosaic-id">
@@ -69,7 +70,7 @@
         <textarea id="tx-message" class="input-box" placeholder="メッセージ（任意）"></textarea>
 
         <button id="btn-transfer" class="button-primary">送金する</button>
-        <button id="back-send" class="button-primary">← モザイク選択へ戻る</button>
+        <button id="back-send" class="button-primary">← トークン選択へ戻る</button>
         <div id="tx-status"></div>
       </div>
     </div>
@@ -85,7 +86,60 @@
         <p id="receive-address" class="address-text"></p>
         <button id="copy-receive-address" class="button-primary">アドレスをコピー</button>
       </div>
+    </div
+
+
+
+      <!-- ============================================================
+     ハーベスト設定画面
+============================================================ -->
+<div id="harvest-page" class="page">
+
+  <div class="card">
+
+    <h2>ハーベスト設定</h2>
+
+    <button id="back-account-harvest"
+            class="button-primary">
+      ← 戻る
+    </button>
+
+
+    <p>
+      アカウント:
+    </p>
+
+    <div id="harvest-address">
+      ---
     </div>
+
+
+    <hr>
+
+
+    <h3>設定</h3>
+
+
+    <button id="start-harvest-btn"
+            class="button-primary">
+      ハーベスト開始
+    </button>
+
+
+    <button id="stop-harvest-btn"
+            class="button-primary">
+      ハーベスト停止
+    </button>
+
+
+    <div id="harvest-status">
+      状態確認中...
+    </div>
+
+
+  </div>
+
+</div>
 
     <!-- ============================================================
        最近の取引（アクティビティ）
