@@ -167,7 +167,10 @@ console.log(
       .forEach(
         item=>{
 
-
+console.log(
+  "送金一覧件数:",
+  sendList.querySelectorAll(".mosaic-item").length
+);
           item.addEventListener(
             "click",
             ()=>{
