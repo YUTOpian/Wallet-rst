@@ -178,13 +178,13 @@ tabActivity?.addEventListener("click", () => {
     // アドレス表示とQRコード生成
     document.getElementById("receive-address").textContent = address;
     const qr = document.getElementById("receive-qrcode");
-    qr.innerHTML = "";
 
-    new QRCode(qr, {
-      text: address,
-      width: 200,
-      height: 200
-    });
+const dataUrl = await QRCode.toDataURL(address, {
+    width: 220,
+    margin: 1
+});
+
+qr.innerHTML = `<img src="${dataUrl}" alt="QR Code">`;
   });
 
 // ============================
