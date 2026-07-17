@@ -300,10 +300,15 @@ document.getElementById("selected-mosaic-name").textContent =
 document.getElementById("selected-mosaic-balance").textContent =
   `${(amount / (10 ** divisibility)).toLocaleString()}`;
 
-    // 送金フォームへスクロール
-    document.getElementById("transfer-card").scrollIntoView({
-      behavior: "smooth"
-    });
+// 送金ポップアップ表示
+const dialog =
+  document.getElementById("transfer-dialog");
+
+if (dialog) {
+
+  dialog.showModal();
+
+}
 
   };
 
