@@ -77,65 +77,145 @@ function getExplorerUrl(hash) {
    1件の TX カード（ベースは壊さず最適化）
 ============================================================ */
 export function createTxCard(txInfo) {
+
   const {
     hash,
-    signer,
     msg,
     state,
     timestamp,
     mosaics,
     direction,
+    recipient,
   } = txInfo;
+
 
   const explorer = getExplorerUrl(hash);
 
-  let amountHtml = "";
 
-  if (mosaics && mosaics.length > 0) {
-    const color = direction === "receive"
-      ? "#4ade80"
-      : "#f87171";
 
-    const label = direction === "receive"
+  const label =
+    direction === "receive"
       ? "受信"
       : "送信";
 
-    amountHtml = mosaics
+
+
+  let mosaicHtml = "";
+
+
+
+  if(
+    mosaics &&
+    mosaics.length > 0
+  ){
+
+    mosaicHtml =
+      mosaics
       .map(
-        (mosaic) => `
-          <div class="tx-amount" style="color:${color}; font-weight:bold;">
-            ${label}: ${mosaic.amount} ${mosaic.name}
+        (mosaic)=>{
+
+
+          return `
+
+          <div class="tx-mosaic">
+
+            <div>
+              モザイク:
+              ${mosaic.name}
+            </div>
+
+            <div>
+              数量:
+              ${mosaic.amount}
+            </div>
+
           </div>
-        `
+
+          `;
+
+
+        }
       )
       .join("");
+
   }
 
+
   return `
-    <div class="tx-item ${state === "unconfirmed" ? "unconfirmed" : "confirmed"}"
-         id="tx-${hash}"
-         onclick="window.open('${explorer}', '_blank')">
 
-      <div class="tx-body">
+  <div
+    class="tx-item ${state === "unconfirmed" ? "unconfirmed" : "confirmed"}"
+    id="tx-${hash}"
+    onclick="window.open('${explorer}', '_blank')">
 
-        <div class="tx-title">${msg}</div>
 
-        <div class="tx-status">
-          ${state.toUpperCase()}
-        </div>
+    <div class="tx-body">
 
-        ${amountHtml}
 
-        ${
-          state === "confirmed" && timestamp
-            ? `<div class="tx-time">🕒 ${formatTimestamp(timestamp)}</div>`
-            : ""
-        }
+      <div class="tx-title">
+        ${label}
+      </div>
+
+
+
+      <div class="tx-status">
+        ${state.toUpperCase()}
+      </div>
+
+
+
+      <div class="tx-recipient">
+
+        宛先:
+
+        <br>
+
+        ${recipient ?? "---"}
 
       </div>
 
+
+
+      ${mosaicHtml}
+
+
+
+
+      <div class="tx-message">
+
+        メッセージ:
+
+        <br>
+
+        ${msg}
+
+      </div>
+
+
+
+
+      ${
+        state === "confirmed" && timestamp
+        ?
+        `
+        <div class="tx-time">
+
+          🕒 ${formatTimestamp(timestamp)}
+
+        </div>
+        `
+        :
+        ""
+      }
+
+
     </div>
+
+
+  </div>
+
   `;
+
 }
 
 /* DOM 追加 */
@@ -181,7 +261,7 @@ export async function loadRecentTx() {
   el.textContent = "読み込み中…";
 
   const address = appState.currentAddress.toString();
-  const url = `${appState.NODE}/transactions/confirmed?address=${address}&order=desc&limit=50`;
+  const url = `${appState.NODE}/transactions/confirmed?address=${address}&order=desc&limit=10`;
 
   try {
     const res = await fetch(url);
@@ -200,15 +280,29 @@ export async function loadRecentTx() {
         const amountInfo = extractAmount(tx);
 
         const txInfo = {
-          hash: meta.hash,
-          signer: tx.signerPublicKey,
-          msg: decodeMessage(tx.message),
-          state: "confirmed",
-          timestamp: meta.timestamp,
+  hash: meta.hash,
+  signer: tx.signerPublicKey,
 
-          mosaics: amountInfo?.mosaics ?? [],
-          direction: amountInfo?.direction ?? null,
-        };
+  recipient:
+    tx.recipientAddress,
+
+  msg:
+    decodeMessage(tx.message),
+
+  state:
+    "confirmed",
+
+  timestamp:
+    meta.timestamp,
+
+
+  mosaics:
+    amountInfo?.mosaics ?? [],
+
+
+  direction:
+    amountInfo?.direction ?? null,
+};
 
         txMap[meta.hash] = txInfo;
         soundPlayed[meta.hash] = true;
