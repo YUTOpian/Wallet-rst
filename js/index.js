@@ -417,30 +417,102 @@ function(e){
 
 
 
-  // ============================
-  // 受け取り
-  // ============================
+// ============================
+// 受け取り
+// ============================
 
 
-  document
-  .getElementById(
-    "receive-btn"
-  )
-  ?.addEventListener(
-    "click",
-    ()=>{
+document
+.getElementById(
+  "receive-btn"
+)
+?.addEventListener(
+  "click",
+  ()=>{
 
 
-      showPage(
-        receivePage
+    console.log(
+      "受取画面"
+    );
+
+
+
+    showPage(
+      receivePage
+    );
+
+
+
+    const address =
+      document
+      .getElementById(
+        "account-address"
+      )
+      .textContent
+      .trim();
+
+
+
+    // アドレス表示
+
+    document
+    .getElementById(
+      "receive-address"
+    )
+    .textContent =
+      address;
+
+
+
+
+    // QRコード生成
+
+    const qr =
+      document
+      .getElementById(
+        "receive-qrcode"
       );
 
 
-    }
-  );
+    qr.innerHTML = "";
 
 
 
+    new QRCode(
+      qr,
+      {
+        text: address,
+        width: 200,
+        height: 200
+      }
+    );
+
+
+  }
+);
+
+
+// ============================
+// 受取画面 → アカウントへ戻る
+// ============================
+
+
+document
+.getElementById(
+  "back-account-receive"
+)
+?.addEventListener(
+  "click",
+  ()=>{
+
+
+    showPage(
+      accountPage
+    );
+
+
+  }
+);
 
 
 
