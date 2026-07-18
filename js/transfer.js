@@ -3,7 +3,7 @@
 
 import { appState } from "./config.js";
 import { setStatus } from "./ui.js";
-import { encryptMessage } from "./sss.js";
+//import { encryptMessage } from "./sss.js";
 
 export async function sendTx() {
   if (!appState.NODE || !appState.currentAddress || !appState.currentPubKey || !appState.isSdkReady) {
