@@ -106,16 +106,27 @@ if (encryptMessage) {
     60 * 60
   );
 
-  const txPayloadHex = appState.sdkCore.utils.uint8ToHex(tx.serialize());
+  //const txPayloadHex = appState.sdkCore.utils.uint8ToHex(tx.serialize());
 
   try {
    setStatus("tx-status", "SSSで署名待ち…");
 
-
   let signed;
 
-
   if (encryptMessage) {
+
+    window.SSS.setEncryptedMessage(
+      messageText,
+      recipientPublicKey
+    );
+
+  }
+
+
+  const txPayloadHex =
+    appState.sdkCore.utils.uint8ToHex(
+      tx.serialize()
+    );
 
 
   window.SSS.setTransactionByPayload(
@@ -123,14 +134,17 @@ if (encryptMessage) {
   );
 
 
-  window.SSS.setEncryptedMessage(
-    messageText,
-    recipientPublicKey
-  );
+  if (encryptMessage) {
 
+    signed =
+      await window.SSS.requestSignEncription();
 
-  signed =
-    await window.SSS.requestSignEncription();
+  } else {
+
+    signed =
+      await window.SSS.requestSign();
+
+  }
 
     console.log("encrypted signed:", signed);
 console.log("payload:", signed.payload);
