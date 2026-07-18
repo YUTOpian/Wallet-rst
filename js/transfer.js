@@ -132,6 +132,8 @@ if (encryptMessage) {
   signed =
     await window.SSS.requestSignEncription();
 
+    console.log("encrypted signed:", signed);
+console.log("payload:", signed.payload);
 
   } else {
 
