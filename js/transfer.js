@@ -3,6 +3,7 @@
 
 import { appState } from "./config.js";
 import { setStatus } from "./ui.js";
+import { encryptMessage } from "./sss.js";
 
 export async function sendTx() {
   if (!appState.NODE || !appState.currentAddress || !appState.currentPubKey || !appState.isSdkReady) {
@@ -56,20 +57,22 @@ const encryptMessage =
     )
   ];
 
-  /* メッセージ */
-  /*
+/*
   メッセージ
 */
 
 let payload;
 
 
-if (encryptMessage) {
+const encrypt =
+  document.getElementById("tx-encrypt")?.checked || false;
 
+
+if (encrypt) {
 
   payload =
-    await window.SSS.createEncryptedMessage(
-      recipientAddress.plain(),
+    await encryptMessage(
+      recipientAddress,
       messageText
     );
 
