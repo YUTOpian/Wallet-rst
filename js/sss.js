@@ -122,6 +122,8 @@ async function internalConnect(isAuto) {
 export async function autoConnectSSS() {
   await internalConnect(true);
 }
+// デバッグ用
+window.appState = appState;
 
 /* ------------------------------------------------------
   暗号化メッセージ生成
