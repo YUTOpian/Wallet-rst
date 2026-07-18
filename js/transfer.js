@@ -82,6 +82,10 @@ let payload;
 if (encryptMessage) {
 
   // ここにSSS暗号化処理を入れる
+    await window.SSS.setEncryptedMessage(
+    messageText,
+    recipientPublicKey
+  );
 
 
 } else {
