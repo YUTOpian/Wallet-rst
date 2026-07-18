@@ -67,7 +67,7 @@ const payload =
   /* トランザクション作成 */
   const descriptor = new appState.sdkSymbol.descriptors.TransferTransactionV1Descriptor(
     recipientAddress,
-    mains, // 補足：元のコードの変数名 mosaics と一致させるため、ここは mosaics のはずです
+    mosaics, // 補足：元のコードの変数名 mosaics と一致させるため、ここは mosaics のはずです
     payload
   );
 
