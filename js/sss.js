@@ -123,21 +123,23 @@ export async function autoConnectSSS() {
   await internalConnect(true);
 }
 
-export async function encryptMessage(
+/* ------------------------------------------------------
+  暗号化メッセージ生成
+------------------------------------------------------ */
+export async function createEncryptedMessage(
   recipientAddress,
-  message
+  messageText
 ) {
 
-  if (!window.SSS) {
-    throw new Error(
-      "SSS Extension not found"
-    );
+  if (!messageText) {
+    return new Uint8Array([
+      0x00
+    ]);
   }
 
 
   /*
-    ここでSSS Extensionへ
-    暗号化要求を送る
+    ここでEncryptedMessage生成処理
   */
 
 
