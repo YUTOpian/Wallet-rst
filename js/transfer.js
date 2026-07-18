@@ -3,7 +3,7 @@
 
 import { appState } from "./config.js";
 import { setStatus } from "./ui.js";
-import { createMessagePayload } from "./message.js";
+import { createPlainMessage } from "./message.js";
 import { getRecipientPublicKey } from "./account.js";
 
 export async function sendTx() {
@@ -72,27 +72,8 @@ const amount = Number(amountStr);
   メッセージ
 */
 
-let payload;
-
-
-if (encryptMessage) {
-
-  await window.SSS.setEncryptedMessage(
-    messageText,
-    recipientPublicKey
-  );
-
-
-  payload =
-    new Uint8Array();
-
-
-} else {
-
-  payload =
-    createPlainMessage(messageText);
-
-}
+const payload =
+  createPlainMessage(messageText);
 
   /* トランザクション作成 */
   const descriptor = new appState.sdkSymbol.descriptors.TransferTransactionV1Descriptor(
