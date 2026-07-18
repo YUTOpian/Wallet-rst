@@ -3,7 +3,8 @@
 
 import { appState } from "./config.js";
 import { setStatus } from "./ui.js";
-import { createPlainMessage } from "./message.js";
+import { createMessagePayload } from "./message.js";
+import { getRecipientPublicKey } from "./account.js";
 
 export async function sendTx() {
   if (!appState.NODE || !appState.currentAddress || !appState.currentPubKey || !appState.isSdkReady) {
@@ -37,8 +38,18 @@ const encryptMessage =
     return;
   }
 
-  const recipientAddress = new appState.sdkSymbol.Address(recipientRaw);
-  const amount = Number(amountStr);
+const recipientAddress =
+  new appState.sdkSymbol.Address(recipientRaw);
+
+
+// 暗号化用：受信者公開鍵
+const recipientPublicKey =
+  await getRecipientPublicKey(
+    recipientAddress
+  );
+
+
+const amount = Number(amountStr);
 
   if (Number.isNaN(amount) || amount < 0) {
     setStatus("tx-status", "金額が不正です。", "error");
@@ -62,7 +73,11 @@ const encryptMessage =
 */
 
 const payload =
-  createPlainMessage(messageText);
+  await createMessagePayload(
+    messageText,
+    encryptMessage,
+    recipientPublicKey
+  );
 
   /* トランザクション作成 */
   const descriptor = new appState.sdkSymbol.descriptors.TransferTransactionV1Descriptor(
