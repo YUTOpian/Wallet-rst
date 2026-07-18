@@ -72,12 +72,27 @@ const amount = Number(amountStr);
   メッセージ
 */
 
-const payload =
-  await createMessagePayload(
+let payload;
+
+
+if (encryptMessage) {
+
+  await window.SSS.setEncryptedMessage(
     messageText,
-    encryptMessage,
     recipientPublicKey
   );
+
+
+  payload =
+    new Uint8Array();
+
+
+} else {
+
+  payload =
+    createPlainMessage(messageText);
+
+}
 
   /* トランザクション作成 */
   const descriptor = new appState.sdkSymbol.descriptors.TransferTransactionV1Descriptor(
