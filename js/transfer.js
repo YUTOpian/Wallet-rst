@@ -81,13 +81,7 @@ let payload;
 
 if (encryptMessage) {
 
-  window.SSS.setEncryptedMessage(
-    messageText,
-    recipientPublicKey
-  );
-
-
-  // 暗号化メッセージはSSS側で処理
+  // SSS側で暗号化するためpayloadは通常メッセージなし
   payload =
     new Uint8Array();
 
@@ -124,8 +118,9 @@ if (encryptMessage) {
   if (encryptMessage) {
 
 
-    window.SSS.setTransactionByPayload(
-      txPayloadHex
+    window.SSS.setEncryptedMessage(
+    messageText,
+    recipientPublicKey
     );
 
 
