@@ -118,14 +118,19 @@ if (encryptMessage) {
   if (encryptMessage) {
 
 
-    window.SSS.setEncryptedMessage(
+  window.SSS.setTransactionByPayload(
+    txPayloadHex
+  );
+
+
+  window.SSS.setEncryptedMessage(
     messageText,
     recipientPublicKey
-    );
+  );
 
 
-    signed =
-      await window.SSS.requestSignEncription();
+  signed =
+    await window.SSS.requestSignEncription();
 
 
   } else {
