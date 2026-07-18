@@ -299,3 +299,42 @@ if (typeof mosaic.id === "string") {
     setStatus("account-status", "取得に失敗しました", "error");
   }
 }
+
+// 受信者公開鍵取得
+export async function getRecipientPublicKey(address) {
+
+  const res = await fetch(
+    new URL(
+      `/accounts/${address.toString()}`,
+      appState.NODE
+    )
+  );
+
+
+  if (!res.ok) {
+    throw new Error(
+      "受信者アカウント情報を取得できませんでした"
+    );
+  }
+
+
+  const data = await res.json();
+
+
+  const publicKey =
+    data.account?.publicKey;
+
+
+  if (
+    !publicKey ||
+    publicKey === "0000000000000000000000000000000000000000000000000000000000000000"
+  ) {
+    throw new Error(
+      "受信者の公開鍵が存在しません"
+    );
+  }
+
+
+  return publicKey;
+
+}
