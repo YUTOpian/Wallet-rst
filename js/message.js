@@ -1,4 +1,6 @@
 // message.js
+// Symbol TransferTransaction メッセージ生成
+
 
 export function createPlainMessage(messageText) {
 
@@ -9,5 +11,20 @@ export function createPlainMessage(messageText) {
     0x00,
     ...msgBytes
   ]);
+
+}
+
+
+/*
+ 平文メッセージ生成
+ ※暗号化処理は後でSSS側へ移す
+*/
+export async function createMessagePayload(
+  messageText,
+  encrypted,
+  recipientPublicKey
+) {
+
+  return createPlainMessage(messageText);
 
 }
