@@ -1,6 +1,7 @@
 // message.js
 // Symbol TransferTransaction メッセージ生成
 
+
 export function createPlainMessage(messageText) {
 
   const msgBytes =
@@ -15,21 +16,24 @@ export function createPlainMessage(messageText) {
 
 
 /*
-  SSS Extensionによる暗号化メッセージ
+  SSS Extension 暗号化メッセージ
 */
 export async function createEncryptedMessage(
   messageText,
   recipientPublicKey
 ) {
 
+  await window.SSS.setEncryptedMessage(
+    messageText,
+    recipientPublicKey
+  );
+
+
   const encrypted =
-    await window.SSS.encryptMessage(
-      recipientPublicKey,
-      messageText
-    );
+    await window.SSS.requestSignEncription();
 
 
-  return encrypted;
+  return encrypted.payload;
 
 }
 
