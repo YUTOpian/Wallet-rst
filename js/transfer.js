@@ -81,11 +81,15 @@ let payload;
 
 if (encryptMessage) {
 
-  // ここにSSS暗号化処理を入れる
-    await window.SSS.setEncryptedMessage(
+  window.SSS.setEncryptedMessage(
     messageText,
     recipientPublicKey
   );
+
+
+  // 暗号化メッセージはSSS側で処理
+  payload =
+    new Uint8Array();
 
 
 } else {
