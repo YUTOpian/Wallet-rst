@@ -109,47 +109,27 @@ if (encryptMessage) {
   //const txPayloadHex = appState.sdkCore.utils.uint8ToHex(tx.serialize());
 
   try {
-   setStatus("tx-status", "SSSで署名待ち…");
 
-  let signed;
+    setStatus("tx-status", "SSSで署名待ち…");
 
-  if (encryptMessage) {
-
-    window.SSS.setEncryptedMessage(
-      messageText,
-      recipientPublicKey
-    );
-
-  }
+    let signed;
 
 
-  const txPayloadHex =
-    appState.sdkCore.utils.uint8ToHex(
-      tx.serialize()
-    );
+    // 暗号化メッセージの場合
+    if (encryptMessage) {
+
+      window.SSS.setEncryptedMessage(
+        messageText,
+        recipientPublicKey
+      );
+
+    }
 
 
-  window.SSS.setTransactionByPayload(
-    txPayloadHex
-  );
-
-
-  if (encryptMessage) {
-
-    signed =
-      await window.SSS.requestSignEncription();
-
-  } else {
-
-    signed =
-      await window.SSS.requestSign();
-
-  }
-
-    console.log("encrypted signed:", signed);
-console.log("payload:", signed.payload);
-
-  } else {
+    const txPayloadHex =
+      appState.sdkCore.utils.uint8ToHex(
+        tx.serialize()
+      );
 
 
     window.SSS.setTransactionByPayload(
@@ -157,27 +137,71 @@ console.log("payload:", signed.payload);
     );
 
 
-    signed =
-      await window.SSS.requestSign();
+    if (encryptMessage) {
+
+      signed =
+        await window.SSS.requestSignEncription();
+
+    } else {
+
+      signed =
+        await window.SSS.requestSign();
+
+    }
 
 
-  }
-    const jsonPayload = JSON.stringify({ payload: signed.payload });
+    console.log("signed:", signed);
+    console.log("payload:", signed.payload);
 
-    const res = await fetch(new URL("/transactions", appState.NODE), {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: jsonPayload
-    });
+
+    const jsonPayload =
+      JSON.stringify({
+        payload: signed.payload
+      });
+
+
+    const res =
+      await fetch(
+        new URL("/transactions", appState.NODE),
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: jsonPayload
+        }
+      );
+
 
     if (res.ok) {
-      setStatus("tx-status", `送金をアナウンスしました。ハッシュ: ${signed.hash}`, "success");
+
+      setStatus(
+        "tx-status",
+        `送金をアナウンスしました。ハッシュ: ${signed.hash}`,
+        "success"
+      );
+
     } else {
+
       console.error(await res.text());
-      setStatus("tx-status", "アナウンスに失敗しました。", "error");
+
+      setStatus(
+        "tx-status",
+        "アナウンスに失敗しました。",
+        "error"
+      );
+
     }
+
+
   } catch (e) {
+
     console.error(e);
-    setStatus("tx-status", "署名または送信に失敗しました。", "error");
+
+    setStatus(
+      "tx-status",
+      "署名または送信に失敗しました。",
+      "error"
+    );
+
   }
-}
