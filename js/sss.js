@@ -122,3 +122,25 @@ async function internalConnect(isAuto) {
 export async function autoConnectSSS() {
   await internalConnect(true);
 }
+
+export async function encryptMessage(
+  recipientAddress,
+  message
+) {
+
+  if (!window.SSS) {
+    throw new Error(
+      "SSS Extension not found"
+    );
+  }
+
+
+  /*
+    ここでSSS Extensionへ
+    暗号化要求を送る
+  */
+
+
+}
+
+
