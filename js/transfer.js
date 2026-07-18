@@ -3,7 +3,7 @@
 
 import { appState } from "./config.js";
 import { setStatus } from "./ui.js";
-//import { encryptMessage } from "./sss.js";
+import { createPlainMessage } from "./message.js";
 
 export async function sendTx() {
   if (!appState.NODE || !appState.currentAddress || !appState.currentPubKey || !appState.isSdkReady) {
@@ -61,15 +61,8 @@ const encryptMessage =
   メッセージ
 */
 
-const msgBytes =
-  new TextEncoder().encode(messageText);
-
-
 const payload =
-  new Uint8Array([
-    0x00,
-    ...msgBytes
-  ]);
+  createPlainMessage(messageText);
 
   /* トランザクション作成 */
   const descriptor = new appState.sdkSymbol.descriptors.TransferTransactionV1Descriptor(
