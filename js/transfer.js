@@ -61,36 +61,15 @@ const encryptMessage =
   メッセージ
 */
 
-let payload;
+const msgBytes =
+  new TextEncoder().encode(messageText);
 
 
-const encrypt =
-  document.getElementById("tx-encrypt")?.checked || false;
-
-
-if (encrypt) {
-
-  payload =
-    await encryptMessage(
-      recipientAddress,
-      messageText
-    );
-
-
-} else {
-
-
-  const msgBytes =
-    new TextEncoder().encode(messageText);
-
-
-  payload =
-    new Uint8Array([
-      0x00,
-      ...msgBytes
-    ]);
-
-}
+const payload =
+  new Uint8Array([
+    0x00,
+    ...msgBytes
+  ]);
 
   /* トランザクション作成 */
   const descriptor = new appState.sdkSymbol.descriptors.TransferTransactionV1Descriptor(
