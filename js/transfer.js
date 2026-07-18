@@ -72,9 +72,24 @@ const amount = Number(amountStr);
   メッセージ
 */
 
-const payload =
-  createPlainMessage(messageText);
+/*
+  メッセージ
+*/
 
+let payload;
+
+
+if (encryptMessage) {
+
+  // ここにSSS暗号化処理を入れる
+
+
+} else {
+
+  payload =
+    createPlainMessage(messageText);
+
+}
   /* トランザクション作成 */
   const descriptor = new appState.sdkSymbol.descriptors.TransferTransactionV1Descriptor(
     recipientAddress,
