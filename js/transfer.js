@@ -107,10 +107,37 @@ if (encryptMessage) {
   const txPayloadHex = appState.sdkCore.utils.uint8ToHex(tx.serialize());
 
   try {
-    setStatus("tx-status", "SSSで署名待ち…");
+   setStatus("tx-status", "SSSで署名待ち…");
 
-    window.SSS.setTransactionByPayload(txPayloadHex);
-    const signed = await window.SSS.requestSign();
+
+  let signed;
+
+
+  if (encryptMessage) {
+
+
+    window.SSS.setTransactionByPayload(
+      txPayloadHex
+    );
+
+
+    signed =
+      await window.SSS.requestSignEncription();
+
+
+  } else {
+
+
+    window.SSS.setTransactionByPayload(
+      txPayloadHex
+    );
+
+
+    signed =
+      await window.SSS.requestSign();
+
+
+  }
     const jsonPayload = JSON.stringify({ payload: signed.payload });
 
     const res = await fetch(new URL("/transactions", appState.NODE), {
