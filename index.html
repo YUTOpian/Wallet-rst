@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Symbol Simple Wallet</title>
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/wallet.css" />
+</head>
+<body>
+
+<header>
+  <h2>Symbol Simple Wallet</h2>
+  <div class="header-info">
+    <p><span id="node-info">---</span></p>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ============================================================
+       接続方法選択画面
+  ============================================================ -->
+  <div id="connect-page" class="page active">
+    <div class="card">
+      <h2>接続方法を選択</h2>
+
+      <h3>ニーモニックでログイン</h3>
+      <p style="font-size:13px;color:#94a3b8;">
+        ニーモニックをインポートするとブラウザ内で署名するため、SSS Extension経由より
+        セキュリティ上のリスクが高くなります。自己責任でご利用ください。
+      </p>
+
+      <div id="mnemonic-has-stored" style="display:none;">
+        <p>保存されたニーモニックがあります。</p>
+        <input id="mnemonic-password-input" type="password" class="input-box" placeholder="パスワード">
+        <button id="mnemonic-unlock-btn" class="button-primary">ロック解除して接続</button>
+        <button id="mnemonic-forget-btn" class="button-primary">保存済みニーモニックを削除</button>
+        <hr>
+      </div>
+
+      <div id="mnemonic-new-import">
+        <textarea id="mnemonic-input" class="input-box" placeholder="ニーモニック（12/24単語、スペース区切り）を入力"></textarea>
+
+        <select id="mnemonic-network-select" class="input-box">
+          <option value="mainnet">Mainnet</option>
+          <option value="testnet">Testnet</option>
+        </select>
+
+        <input id="mnemonic-account-index" class="input-box" type="number" value="0" placeholder="アカウントインデックス（通常は0）">
+        <input id="mnemonic-new-password" type="password" class="input-box" placeholder="次回から自動ログインするためのパスワード（空欄なら保存しない）">
+
+        <button id="mnemonic-import-btn" class="button-primary">インポートして接続</button>
+      </div>
+
+      <div id="connect-status" style="margin-top:12px;"></div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       通貨選択画面（マルチウォレット）
+       中身の通貨カードは js/walletListPage.js が chains/registry.js の
+       CHAINS を元に動的生成する。ここには雛形（テンプレート／空コンテナ）のみ置く。
+  ============================================================ -->
+  <div id="wallet-list-page" class="page">
+    <div class="card">
+      <h2>ウォレット</h2>
+
+      <div class="wallet-total-row">
+        <span class="wallet-total-label">合計残高（概算）</span>
+        <span id="wallet-total-value" class="wallet-total-value">---</span>
+      </div>
+
+      <!-- 通貨カードはここにJSで挿入される -->
+      <div id="chain-list"></div>
+
+      <button id="wallet-logout-btn" class="button-secondary">ログアウト</button>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       通貨カードの1件分テンプレート（JS側で clone して使う）
+       data-chain 属性でどの通貨のカードかを識別する。
+  ============================================================ -->
+  <template id="chain-card-template">
+    <div class="chain-card" data-chain="">
+      <div class="chain-card-icon">
+        <img class="chain-card-icon-img" src="" alt="">
+      </div>
+      <div class="chain-card-main">
+        <div class="chain-card-name"></div>
+        <div class="chain-card-balance">
+          <span class="chain-card-balance-value">---</span>
+          <span class="chain-card-balance-symbol"></span>
+        </div>
+      </div>
+      <div class="chain-card-badges">
+        <span class="chain-card-badge chain-card-badge-harvest" hidden>ステーキング可</span>
+      </div>
+      <div class="chain-card-arrow">›</div>
+    </div>
+  </template>
+
+  <!-- ============================================================
+       アカウント画面（通貨共通テンプレート）
+       通貨ごとの出し分け（ステーキングボタン／保有トークン一覧タブ）は
+       js/accountPage.js が chains/registry.js のメタ情報（harvest / multiAsset）
+       を見て show/hide する。id="account-*" はどの通貨でも使い回す想定。
+  ============================================================ -->
+  <div id="account-page" class="page">
+    <div class="card">
+      <button id="back-wallet-list" class="button-primary">← 通貨一覧へ戻る</button>
+      <h2 id="account-chain-name">アカウント情報</h2>
+
+      <p><b>アドレス：</b></p>
+      <div class="address-row">
+        <span id="account-address" class="address-text">---</span>
+      </div>
+      <button id="copy-address-btn" class="copy-btn">🗒️</button>
+
+      <p>
+        <b>残高：</b>
+        <span id="account-balance">---</span>
+      </p>
+
+      <div class="wallet-actions">
+        <button id="receive-btn" class="button-primary">受け取り</button>
+        <button id="send-btn" class="button-primary">送金</button>
+        <!--
+          ステーキング(ハーベスト)はXYM専用機能。
+          registry.js の meta.harvest === true のときだけ accountPage.js が hidden を外す。
+          （XEMを含む他7通貨は常に非表示）
+        -->
+        <button id="harvest-btn" class="button-primary" hidden>ステーキング</button>
+      </div>
+
+      <hr>
+
+      <!--
+        複数アセットを保有しうる通貨(現状XYMのみ)用の「保有トークン」タブ。
+        meta.multiAsset === false の通貨（BTC/ETH/Polygon/Kaia/XRP/SOL/XEM）では
+        この要素ごと非表示にし、アクティビティ（tx-list）だけを直接表示する。
+      -->
+      <div id="multi-asset-section" hidden>
+        <div class="wallet-tabs">
+          <div id="tab-token" class="wallet-tab active">保有トークン</div>
+          <div id="tab-activity" class="wallet-tab">アクティビティ</div>
+        </div>
+
+        <div id="token-content">
+          <div id="mosaic-list">読み込み中...</div>
+        </div>
+      </div>
+
+      <!-- アクティビティ（全通貨共通。multiAsset通貨ではタブ切替、単一アセット通貨では常時表示） -->
+      <div id="activity-content">
+        <div id="tx-list">読み込み中...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       モザイク選択画面
+  ============================================================ -->
+  <div id="send-page" class="page">
+    <div class="card">
+      <h2>トークン選択</h2>
+      <button id="back-account" class="button-primary">← 戻る</button>
+      <p>送りたいトークンを選択してください</p>
+      <div id="send-mosaic-list"></div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       送金入力画面
+  ============================================================ -->
+  <div id="transfer-page" class="page">
+    <div class="card">
+      <h2>トークン送金</h2>
+      <button id="back-send" class="button-primary">← トークン選択へ戻る</button>
+
+      <p>
+        <b>送信トークン：</b>
+        <span id="selected-mosaic-name">未選択</span>
+      </p>
+      <p>
+        <b>保有数量：</b>
+        <span id="selected-mosaic-balance">---</span>
+      </p>
+
+      <input type="hidden" id="selected-mosaic-id">
+      <input id="tx-recipient" class="input-box" placeholder="宛先アドレス">
+      <input id="tx-amount" class="input-box" type="number" placeholder="数量">
+      <textarea id="tx-message" class="input-box" placeholder="メッセージ（任意）"></textarea>
+
+       <!-- <label class="switch">
+        <input type="checkbox" id="tx-encrypt">
+<span>メッセージを暗号化する</span>
+      </label> 
+
+      <br> -->
+
+      <button id="btn-transfer" class="button-primary">送金する</button>
+      <div id="tx-status"></div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       受取画面
+  ============================================================ -->
+  <div id="receive-page" class="page">
+    <div class="card">
+      <h2>受け取り</h2>
+      <button id="back-account-receive" class="button-primary">← 戻る</button>
+      <div id="receive-qrcode"></div>
+      <p id="receive-address" class="address-text"></p>
+      <button id="copy-receive-address" class="button-primary">アドレスをコピー</button>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       ステーキング画面
+  ============================================================ -->
+  <div id="harvest-page" class="page">
+    <div class="card">
+      <h2>ステーキング設定</h2>
+      <button id="back-account-harvest" class="button-primary">← 戻る</button>
+
+      <p>アカウント:</p>
+      <div id="harvest-address">---</div>
+      <div>
+        重要度：<span id="harvest-importance">---</span>
+      </div>
+
+      <div id="harvest-badge" class="harvest-badge">状態確認中...</div>
+
+      <hr>
+
+      <h3>委任先ノード</h3>
+      <p style="font-size:13px;color:#94a3b8;">
+        委任ハーベスティングを受け付けているノードを選ぶか、URLを直接入力してください。
+        （下の候補一覧は単にオンラインなノード一覧で、委任ハーベストを受け付けているとは限りません）
+      </p>
+      <select id="harvest-node-select" class="input-box">
+        <option value="">-- 候補を読み込み中... --</option>
+      </select>
+      <input id="harvest-node-input" class="input-box" placeholder="または直接ノードURLを入力 (例: https://xxx.xxx.jp:3001)">
+
+      <hr>
+
+      <h3>設定</h3>
+      <button id="start-harvest-btn" class="button-primary">開始</button>
+      <button id="stop-harvest-btn" class="button-primary">停止</button>
+      <div id="harvest-status">状態確認中...</div>
+    </div>
+  </div>
+
+</div>
+
+<script type="module" src="js/index.js"></script>
+
+</body>
+</html>
